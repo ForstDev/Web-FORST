@@ -1,6 +1,5 @@
 import Link from "next/link";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
-import Resaltado from "@/components/ui/Resaltado";
 
 const nav = [
   { href: "/", label: "Inicio" },
@@ -72,11 +71,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-white/55">
+        <div className="pt-8 text-xs text-white/55">
           <p>© {new Date().getFullYear()} FORST. Plataforma empresarial.</p>
-          <p>
-            <Resaltado>La entrega no es el final.</Resaltado>
-          </p>
         </div>
       </div>
     </footer>
