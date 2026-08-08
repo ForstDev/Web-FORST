@@ -146,7 +146,7 @@ export default function PostVenta() {
             </p>
           </div>
 
-          <div className="shrink-0 rounded-xl border border-[var(--forst-tan)]/25 bg-[var(--forst-tan)]/[0.08] px-6 py-5 md:min-w-[200px]">
+          <div className="shrink-0 rounded-xl border border-[var(--forst-black)]/40 bg-[var(--forst-black)]/25 px-6 py-5 md:min-w-[200px]">
             <p className="font-display text-3xl md:text-4xl text-white">
               24–48h
             </p>

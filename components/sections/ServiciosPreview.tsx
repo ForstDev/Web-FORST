@@ -4,25 +4,27 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { servicios } from "@/data/servicios";
 import PiezaGlyph from "@/components/ui/PiezaGlyph";
-import Star from "@/components/ui/Star";
+import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import EtiquetaVertical from "@/components/ui/EtiquetaVertical";
 import Resaltado from "@/components/ui/Resaltado";
 import { fadeUp, staggerChildren } from "@/lib/motion-variants";
 
 /**
  * Servicios en la home: el texto manda desde la izquierda y las tarjetas
- * ocupan la derecha en tablero de ajedrez —dos verdes en diagonal, dos
- * claras—, en vez de tres columnas iguales una al lado de la otra.
+ * ocupan la derecha en tablero de ajedrez, en vez de tres columnas
+ * iguales una al lado de la otra.
  *
  * La cuarta casilla la ocupa el Diagnóstico FORST: completa la grilla y
  * pone a la vista el producto de entrada, que antes solo existía dentro
  * de /servicios.
  *
- * Regla de color: canela como fondo de tarjeta está permitido (no es una
- * sección completa), y es justo lo que le da presencia a las tarjetas
- * claras — el tinte verde al 6% que tenían antes era casi el mismo
- * hueso de la página y se perdía contra el fondo.
+ * Regla de color: el canela no se usa como fondo de tarjeta — los cuatro
+ * colores de fondo son verde, marfil y plomo, los mismos tres planes de
+ * /servicios (Presencia, Operación, Estructura), más verde otra vez para
+ * Diagnóstico.
  */
+
+type Paleta = "verde" | "marfil" | "plomo";
 
 type Casilla = {
   href: string;
@@ -30,8 +32,7 @@ type Casilla = {
   bajada: string;
   /** Pieza del isotipo, o la estrella para el diagnóstico. */
   pieza: 0 | 1 | 2 | "estrella";
-  /** true = tarjeta verde llena; false = tarjeta clara */
-  llena: boolean;
+  paleta: Paleta;
 };
 
 const CASILLAS: Casilla[] = [
@@ -40,54 +41,76 @@ const CASILLAS: Casilla[] = [
     titulo: servicios[0].titulo,
     bajada: servicios[0].herramienta,
     pieza: 0,
-    llena: true,
+    // Mismos colores que sus paneles en /servicios: Presencia verde,
+    // Operación marfil, Estructura plomo — el canela ya no se usa como
+    // fondo de tarjeta en ningún lado del sitio.
+    paleta: "verde",
   },
   {
     href: `/servicios#${servicios[1].slug}`,
     titulo: servicios[1].titulo,
     bajada: servicios[1].herramienta,
     pieza: 1,
-    llena: false,
+    paleta: "marfil",
   },
   {
     href: `/servicios#${servicios[2].slug}`,
     titulo: servicios[2].titulo,
     bajada: servicios[2].herramienta,
     pieza: 2,
-    llena: false,
+    paleta: "plomo",
   },
   {
     href: "/servicios#diagnostico",
     titulo: "Diagnóstico",
     bajada: "Empieza por acá si no sabes cuál",
     pieza: "estrella",
-    llena: true,
+    paleta: "verde",
   },
 ];
 
+const FONDOS: Record<Paleta, string> = {
+  verde: "var(--forst-green)",
+  marfil: "var(--forst-white)",
+  plomo: "var(--forst-black)",
+};
+
 function Tarjeta({ casilla }: { casilla: Casilla }) {
-  const { llena } = casilla;
-  const fondo = llena ? "var(--forst-green)" : "var(--forst-tan)";
-  const titulo = llena ? "var(--forst-white)" : "var(--forst-green)";
-  const bajada = llena ? "rgba(247,246,242,0.66)" : "rgba(0,46,44,0.78)";
-  // El ícono/flecha siempre en verde: sobre el verde el canela ya lo
-  // ocupa el fondo, y sobre canela, canela se pierde por completo.
-  const icono = llena ? "var(--forst-tan)" : "var(--forst-green)";
+  const { paleta } = casilla;
+  const fondo = FONDOS[paleta];
+  const oscura = paleta === "verde" || paleta === "plomo";
+  const titulo = oscura ? "var(--forst-white)" : "var(--forst-green)";
+  const bajada = oscura ? "rgba(247,246,242,0.66)" : "rgba(0,46,44,0.78)";
+  // Acento gráfico: canela sobre fondo oscuro (verde/plomo), verde sobre
+  // marfil — ahí el canela no se lee y cae al color de marca.
+  const icono = oscura ? "var(--forst-tan)" : "var(--forst-green)";
 
   return (
     <motion.div variants={fadeUp}>
       <Link
         href={casilla.href}
-        className="group relative flex flex-col justify-between h-full min-h-[188px] md:min-h-[212px] p-6 md:p-8 overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+        className={`group relative flex flex-col justify-between h-full min-h-[188px] md:min-h-[212px] p-6 md:p-8 overflow-hidden transition-transform duration-300 hover:-translate-y-1 ${
+          // El marfil es casi el mismo hueso de la página: sin este anillo
+          // interno, el borde exterior de la tarjeta se pierde contra el
+          // fondo de la sección.
+          paleta === "marfil" ? "ring-1 ring-inset ring-[var(--forst-line)]" : ""
+        }`}
         style={{ background: fondo }}
       >
         <span className="relative flex items-start justify-between">
           <span className="w-8 h-8 md:w-9 md:h-9">
             {casilla.pieza === "estrella" ? (
-              // Mismo scale que la pieza 2 (el diamante) de PiezaGlyph —
-              // así el diamante de Diagnóstico pesa lo mismo que las
-              // otras tres piezas en vez de verse como un puntito suelto.
-              <Star className="w-full h-full" color={icono} scale={2} />
+              // Diagnóstico no es una pieza del sistema como las otras
+              // tres — es el punto de partida, así que lleva el isotipo
+              // completo en vez de una sola pieza suelta (antes usaba el
+              // mismo diamante que Estructura y se confundían).
+              <AnimatedLogo
+                size={34}
+                color={icono}
+                bg={fondo}
+                animateOnMount={false}
+                className="w-full h-full"
+              />
             ) : (
               <PiezaGlyph
                 pieza={casilla.pieza}

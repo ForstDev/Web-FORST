@@ -79,7 +79,7 @@ export const portafolio: Caso[] = [
       "Optimización móvil",
       "Acompañamiento post-entrega",
     ],
-    url: "https://web-production-5cf12.up.railway.app/",
+    url: "https://velkai.vercel.app",
     host: "velkai.com",
     imagen: "https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/caso-velkai-escena.webp",
     imagenAlt:

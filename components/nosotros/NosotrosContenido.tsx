@@ -130,24 +130,22 @@ export default function NosotrosContenido() {
             transition={{ duration: 0.6, ease: EASE }}
             className="relative w-full overflow-hidden grid md:grid-cols-2 mt-8 md:mt-10"
           >
-            {/* Canela como fondo de una tarjeta (no de una sección
-                completa) sí está dentro de lo que la marca permite —
-                confirmado. Vuelve el canela acá; el texto vuelve a
-                verde/negro porque sobre este tono claro es lo que se
-                lee bien, no el blanco. */}
+            {/* Plomo como fondo, igual que Visión en verde — el canela
+                se sacó de todos los fondos del sitio, ya no es una
+                opción para superficies. */}
             <motion.div
               whileHover="hover"
               initial="rest"
               transition={{ duration: 0.3, ease: EASE }}
-              className="group relative flex flex-col p-8 md:pt-14 md:pl-14 md:pb-14 md:pr-40 lg:pr-52 overflow-hidden"
-              style={{ background: "var(--forst-tan)" }}
+              className="group relative flex flex-col p-8 md:pt-14 md:pl-14 md:pb-14 md:pr-40 lg:pr-52 overflow-hidden text-white"
+              style={{ background: "var(--forst-black)" }}
             >
               <motion.div
                 variants={{ rest: { y: 0 }, hover: { y: -4 } }}
                 transition={{ duration: 0.3, ease: EASE }}
                 className="relative"
               >
-                <span className="font-display font-medium text-3xl md:text-5xl text-black uppercase">
+                <span className="font-display font-medium text-3xl md:text-5xl text-white uppercase">
                   <WordReveal text="Misión" inView />
                 </span>
               </motion.div>
@@ -156,7 +154,7 @@ export default function NosotrosContenido() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.6, ease: EASE, delay: 0.2 }}
-                className="relative mt-8 font-display text-xl md:text-2xl text-black leading-snug max-w-md"
+                className="relative mt-8 font-display text-xl md:text-2xl text-white leading-snug max-w-md"
               >
                 Crear, desarrollar e impulsar negocios a través de
                 soluciones tecnológicas, comerciales y estratégicas que
@@ -167,14 +165,14 @@ export default function NosotrosContenido() {
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ duration: 0.6, ease: EASE, delay: 0.35 }}
-                className="relative mt-6 h-px w-10 bg-black/25 origin-left"
+                className="relative mt-6 h-px w-10 bg-white/25 origin-left"
               />
               <motion.p
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.5, ease: EASE, delay: 0.4 }}
-                className="relative mt-6 text-[13px] md:text-sm text-black/60 leading-relaxed max-w-sm"
+                className="relative mt-6 text-[13px] md:text-sm text-white/60 leading-relaxed max-w-sm"
               >
                 En FORST construimos proyectos con propósito, diseñados
                 para responder a las necesidades actuales del mercado y
