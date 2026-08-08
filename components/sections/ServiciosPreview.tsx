@@ -11,17 +11,17 @@ import { fadeUp, staggerChildren } from "@/lib/motion-variants";
 
 /**
  * Servicios en la home: el texto manda desde la izquierda y las tarjetas
- * ocupan la derecha en tablero de ajedrez, en vez de tres columnas
- * iguales una al lado de la otra.
+ * de los 3 planes ocupan la derecha, en una fila — tres planes, tres
+ * tarjetas, sin un cuarto elemento que no cuadre con el título.
  *
- * La cuarta casilla la ocupa el Diagnóstico FORST: completa la grilla y
- * pone a la vista el producto de entrada, que antes solo existía dentro
- * de /servicios.
+ * El Diagnóstico FORST va aparte, debajo: no es un plan que se elige,
+ * es la herramienta para decidir cuál — por eso lleva un tratamiento
+ * distinto (borde, no relleno) en vez de sumarse como una cuarta
+ * tarjeta igual a las otras.
  *
- * Regla de color: el canela no se usa como fondo de tarjeta — los cuatro
- * colores de fondo son verde, marfil y plomo, los mismos tres planes de
- * /servicios (Presencia, Operación, Estructura), más verde otra vez para
- * Diagnóstico.
+ * Regla de color: el canela no se usa como fondo de tarjeta — los tres
+ * colores de fondo son verde, marfil y plomo, los mismos de sus paneles
+ * en /servicios (Presencia, Operación, Estructura).
  */
 
 type Paleta = "verde" | "marfil" | "plomo";
@@ -30,12 +30,11 @@ type Casilla = {
   href: string;
   titulo: string;
   bajada: string;
-  /** Pieza del isotipo, o la estrella para el diagnóstico. */
-  pieza: 0 | 1 | 2 | "estrella";
+  pieza: 0 | 1 | 2;
   paleta: Paleta;
 };
 
-const CASILLAS: Casilla[] = [
+const PLANES: Casilla[] = [
   {
     href: `/servicios#${servicios[0].slug}`,
     titulo: servicios[0].titulo,
@@ -59,13 +58,6 @@ const CASILLAS: Casilla[] = [
     bajada: servicios[2].herramienta,
     pieza: 2,
     paleta: "plomo",
-  },
-  {
-    href: "/servicios#diagnostico",
-    titulo: "Diagnóstico",
-    bajada: "Empieza por acá si no sabes cuál",
-    pieza: "estrella",
-    paleta: "verde",
   },
 ];
 
@@ -102,26 +94,12 @@ function Tarjeta({ casilla }: { casilla: Casilla }) {
       >
         <span className="relative flex items-start justify-between">
           <span className="w-8 h-8 md:w-9 md:h-9">
-            {casilla.pieza === "estrella" ? (
-              // Diagnóstico no es una pieza del sistema como las otras
-              // tres — es el punto de partida, así que lleva el isotipo
-              // completo en vez de una sola pieza suelta (antes usaba el
-              // mismo diamante que Estructura y se confundían).
-              <AnimatedLogo
-                size={34}
-                color={icono}
-                bg={fondo}
-                animateOnMount={false}
-                className="w-full h-full"
-              />
-            ) : (
-              <PiezaGlyph
-                pieza={casilla.pieza}
-                stroke={icono}
-                filled
-                className="w-full h-full"
-              />
-            )}
+            <PiezaGlyph
+              pieza={casilla.pieza}
+              stroke={icono}
+              filled
+              className="w-full h-full"
+            />
           </span>
 
           {/* Flecha de redirección: la afordancia de "esto te lleva a
@@ -168,6 +146,54 @@ function Tarjeta({ casilla }: { casilla: Casilla }) {
           className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
           style={{ background: icono }}
         />
+      </Link>
+    </motion.div>
+  );
+}
+
+/** El Diagnóstico no es un cuarto plan — es la herramienta para elegir
+ * entre los tres. Por eso va aparte, con borde en vez de relleno: se lee
+ * como una franja de ayuda, no como una tarjeta más de la misma fila. */
+function DiagnosticoBanner() {
+  return (
+    <motion.div variants={fadeUp}>
+      <Link
+        href="/servicios#diagnostico"
+        className="group relative flex items-center gap-5 md:gap-6 rounded-2xl border border-[var(--forst-line)] px-6 py-5 md:px-8 md:py-6 hover:border-[var(--forst-green)]/40 hover:bg-[var(--forst-tint)] transition-colors"
+      >
+        <span className="shrink-0 w-9 h-9 md:w-10 md:h-10">
+          <AnimatedLogo
+            size={36}
+            color="var(--forst-green)"
+            bg="var(--forst-white)"
+            animateOnMount={false}
+            className="w-full h-full"
+          />
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="block t-h3 text-[var(--forst-green)]">
+            Diagnóstico FORST
+          </span>
+          <span className="block mt-1 text-[13.5px] leading-snug text-black/65">
+            Empieza por acá si no sabes cuál de los tres te conviene
+          </span>
+        </span>
+
+        <svg
+          aria-hidden
+          viewBox="0 0 24 24"
+          className="shrink-0 w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        >
+          <path
+            d="M7 17L17 7M17 7H9M17 7V15"
+            stroke="var(--forst-green)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
       </Link>
     </motion.div>
   );
@@ -226,19 +252,30 @@ export default function ServiciosPreview() {
             </Link>
           </motion.div>
 
-          {/* Tarjetas en tablero de ajedrez, dos por fila — el vertical
-              apilado era para el acordeón de /servicios, no para acá. */}
-          <motion.div
-            variants={staggerChildren}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-[var(--forst-line)] rounded-2xl overflow-hidden ring-1 ring-[var(--forst-line)]"
-          >
-            {CASILLAS.map((c) => (
-              <Tarjeta key={c.href} casilla={c} />
-            ))}
-          </motion.div>
+          <div className="lg:col-span-7 flex flex-col gap-5">
+            {/* Los 3 planes, en fila — el vertical apilado era para el
+                acordeón de /servicios, no para acá. */}
+            <motion.div
+              variants={staggerChildren}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              className="grid sm:grid-cols-3 gap-px bg-[var(--forst-line)] rounded-2xl overflow-hidden ring-1 ring-[var(--forst-line)]"
+            >
+              {PLANES.map((c) => (
+                <Tarjeta key={c.href} casilla={c} />
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <DiagnosticoBanner />
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

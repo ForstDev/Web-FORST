@@ -24,7 +24,7 @@ export default function ServiciosHero() {
 
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
         <h1 className="lg:col-span-7 t-h1 text-balance">
-          <span className="text-black/40">
+          <span className="text-[var(--forst-black)]">
             <WordReveal text="Tres planes, un mismo" />
           </span>
           <span className="text-[var(--forst-green)]">
