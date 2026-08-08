@@ -90,10 +90,13 @@ function Tarjeta({ casilla }: { casilla: Casilla }) {
       <Link
         href={casilla.href}
         className={`group relative flex flex-col justify-between h-full min-h-[188px] md:min-h-[212px] p-6 md:p-8 overflow-hidden transition-transform duration-300 hover:-translate-y-1 ${
-          // El marfil es casi el mismo hueso de la página: sin este anillo
-          // interno, el borde exterior de la tarjeta se pierde contra el
-          // fondo de la sección.
-          paleta === "marfil" ? "ring-1 ring-inset ring-[var(--forst-line)]" : ""
+          // El marfil es casi el mismo hueso de la página: el anillo solo
+          // no alcanza en pantallas anchas, con más aire alrededor para
+          // que se pierda. La sombra le da profundidad real, no depende
+          // de que el color contraste.
+          paleta === "marfil"
+            ? "ring-1 ring-inset ring-[var(--forst-line)] shadow-[0_4px_20px_rgba(0,46,44,0.10)]"
+            : ""
         }`}
         style={{ background: fondo }}
       >
@@ -188,7 +191,7 @@ export default function ServiciosPreview() {
               <span className="block t-air text-[var(--forst-green)]">
                 Tres planes
               </span>
-              <span className="block t-air-caps t-air-caps-lg mt-4 text-[var(--forst-black)]/80">
+              <span className="block t-air-caps t-air-caps-lg mt-4 text-[var(--forst-black)]">
                 un mismo punto de llegada
               </span>
             </h2>
