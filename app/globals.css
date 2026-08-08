@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+:root {
+  /* Paleta oficial del Manual de Marca FORST — 4 colores, ni uno más.
+     Principales (Verde Forst, Plomo): fondos, textos y gráficos.
+     Secundarios: Marfil es fondos y textos; Canela es SOLO gráficos —
+     nunca texto, nunca un fondo grande. El canela sobre hueso da ~1.4:1
+     de contraste (es casi el mismo tono), así que como texto sería
+     ilegible de todas formas — la regla del manual y la de accesibilidad
+     coinciden acá. */
+  --background: #f7f6f2;
+  --foreground: #191919;
+  --forst-green: #002e2c; /* Verde Forst — fondos | textos | gráficos */
+  --forst-green-soft: #0a4a46;
+  --forst-white: #f7f6f2; /* Marfil — fondos | textos */
+  --forst-black: #191919; /* Plomo — fondos | textos | gráficos */
+  /* Tintes derivados del verde por transparencia — no son colores nuevos,
+     son el verde de marca a distintas opacidades sobre el hueso */
+  --forst-tint: rgba(0, 46, 44, 0.06);
+  --forst-line: rgba(0, 46, 44, 0.14);
+  /* Canela — SOLO gráficos: puntos, diamantes, íconos, líneas de acento,
+     el fondo de una franja o chip chico. Nunca color de texto, nunca el
+     fondo de una sección o superficie grande. */
+  --forst-tan: #e0bca4;
+  --forst-tan-soft: rgba(224, 188, 164, 0.18);
+  /* Verde un paso más profundo que el de marca, para bloques donde el
+     verde base necesita separarse de sí mismo. */
+  --forst-green-deep: #001f1d;
+
+  /* Superficies: cada sección elige una de estas tres, nunca un color
+     suelto. Así el ritmo claro/oscuro es una decisión y no un accidente. */
+  --surface-canvas: var(--forst-white);
+  --surface-deep: var(--forst-green);
+  --surface-ink: var(--forst-black);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-forst-green: var(--forst-green);
+  --color-forst-green-soft: var(--forst-green-soft);
+  --color-forst-white: var(--forst-white);
+  --color-forst-black: var(--forst-black);
+  /* Redefine los tokens base de Tailwind: cualquier bg-white, text-black,
+     border-white/25, etc. en todo el sitio pasa a usar la paleta nueva
+     automáticamente, sin tocar cada componente uno por uno. */
+  --color-white: var(--forst-white);
+  --color-black: var(--forst-black);
+  --font-display: var(--font-poppins);
+  --font-body: var(--font-montserrat);
+}
+
+html {
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Cursor propio: se oculta el del sistema solo en punteros finos
+   (mouse/trackpad) — los campos de texto conservan el cursor nativo. */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    cursor: auto !important;
+  }
+}
+
+.font-display {
+  /* Poppins para títulos, Montserrat para todo lo demás — reemplaza a
+     Lexend/Lexend Giga. */
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Escala tipográfica ----------
+   El tracking es específico por tamaño, nunca uno solo para todo: los
+   títulos grandes se aprietan (las letras se leen demasiado separadas
+   al crecer) y el texto chico se abre. Un `letter-spacing` único
+   siempre está mal en algún extremo de la escala. */
+
+/* Títulos en mayúsculas: la regla de marca. El tracking negativo que
+   servía para texto mixto aprieta demasiado en caps (las mayúsculas no
+   tienen ascendentes/descendentes que ya den aire), así que se afloja
+   en cada nivel al mismo tiempo que se agrega el uppercase. */
+
+.t-display {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  /* El 6vw no es decorativo: la línea más larga del titular ("listos para
+     evolucionar.") ocupa ~10.9× su font-size, y a 1024px la columna del
+     hero mide ~700px. 6vw deja esa línea entera en todos los anchos; con
+     6.5vw se partía en dos a 1280px. */
+  font-size: clamp(2.75rem, 6vw, 5.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+}
+
+.t-h1 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.008em;
+}
+
+.t-h2 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 3.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.t-h3 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.22;
+  letter-spacing: 0em;
+}
+
+.t-lead {
+  font-size: clamp(1rem, 1.3vw, 1.1875rem);
+  line-height: 1.62;
+  letter-spacing: -0.005em;
+}
+
+.t-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Regla de composición: un bloque de texto largo nunca pasa de ~68
+   caracteres por línea, sin importar cuánto ancho tenga la sección. */
+.measure {
+  max-width: 62ch;
+}
+
+.measure-tight {
+  max-width: 46ch;
+}
+
+/* ---------- Registro aireado ----------
+   El otro extremo de la escala: Poppins Light con mucho aire en vez del
+   peso medio apretado. Es el registro para los momentos de silencio de
+   la página (aperturas de sección, titulares de galería), donde manda la
+   composición y no el volumen del texto. */
+
+.t-air {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(2.5rem, 5.4vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.008em;
+}
+
+/* La segunda línea del titular: en caps y muy abierta. El contraste
+   entre esta y `.t-air` es el gesto tipográfico de la marca.
+   NO lleva `font-size` a propósito: al declararlo acá, esta regla vencía
+   a utilidades como `text-[11px]` (misma especificidad, pero definida
+   después de Tailwind) y una etiqueta de 11px terminaba renderizando a
+   24px. El tamaño se elige en cada uso. */
+.t-air-caps {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* El tamaño por defecto del gesto, como utilidad aparte y opcional. */
+.t-air-caps-lg {
+  font-size: clamp(0.95rem, 1.7vw, 1.55rem);
+}
+
+/* Etiqueta rotada al borde de la sección, leyendo de abajo hacia arriba. */
+.t-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* Ritmo de sección: mucho más aire que antes. El silencio entre bloques
+   es parte del diseño, no espacio sobrante. */
+.seccion {
+  padding-top: clamp(5rem, 11vh, 9rem);
+  padding-bottom: clamp(5rem, 11vh, 9rem);
+}
+
+.font-logo {
+  /* Solo para el nombre "FORST" del logo — su tipografía real, no la
+     del resto del sitio. */
+  font-family: var(--font-lexend-giga), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--forst-green);
+  color: var(--forst-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--forst-green);
+  outline-offset: 3px;
+}
+
+/* Numerales editoriales gigantes: solo contorno */
+.text-stroke-green {
+  -webkit-text-stroke: 1.5px var(--forst-green);
+  color: transparent;
+}
+
+.text-stroke-white {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.55);
+  color: transparent;
+}
+
+/* Lenis (smooth scroll) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Scroll bar propia — reemplaza la del sistema en vez de ocultarla */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--forst-green) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--forst-green);
+  border-radius: 8px;
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--forst-tan);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
