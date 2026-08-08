@@ -191,7 +191,16 @@ export default function ServiciosPreview() {
               <span className="block t-air text-[var(--forst-green)]">
                 Tres planes
               </span>
-              <span className="block t-air-caps t-air-caps-lg mt-4 text-[var(--forst-black)]">
+              <span
+                className="block t-air-caps t-air-caps-lg mt-4 text-[var(--forst-black)]"
+                // t-air-caps fija font-weight:500 y le gana en cascada a
+                // las utilidades de peso de Tailwind (mismo problema de
+                // especificidad que ya documenta esa clase para el
+                // tamaño) — con el tracking tan abierto, ese peso medio
+                // se ve más liviano/gris de lo que es. Inline sí gana
+                // siempre, sin pelearse con la cascada.
+                style={{ fontWeight: 650 }}
+              >
                 un mismo punto de llegada
               </span>
             </h2>
@@ -224,7 +233,7 @@ export default function ServiciosPreview() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-[var(--forst-line)] rounded-2xl overflow-hidden"
+            className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-[var(--forst-line)] rounded-2xl overflow-hidden ring-1 ring-[var(--forst-line)]"
           >
             {CASILLAS.map((c) => (
               <Tarjeta key={c.href} casilla={c} />
