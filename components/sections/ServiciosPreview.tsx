@@ -161,15 +161,30 @@ function DiagnosticoBanner() {
         className="group relative flex items-center gap-5 md:gap-6 rounded-2xl border border-[var(--forst-line)] px-6 py-5 md:px-8 md:py-6 hover:border-[var(--forst-green)]/40 hover:bg-[var(--forst-tint)] transition-colors"
       >
         <span className="shrink-0 w-9 h-9 md:w-10 md:h-10">
-          {/* El diamante en contorno, no relleno: mismo lenguaje que las
-              3 piezas de arriba, pero ni es el logo (ya se repite mucho
-              en el sitio) ni se confunde con el de Estructura, que va
-              relleno. */}
-          <PiezaGlyph
-            pieza={2}
-            stroke="var(--forst-green)"
+          {/* Lupa, no una pieza del isotipo: el Diagnóstico es la parte
+              de "revisar tu negocio", no un servicio más, así que no
+              comparte el lenguaje geométrico de las 3 piezas de arriba
+              (ni repite el logo, que ya está en todos lados). */}
+          <svg
+            viewBox="0 0 24 24"
             className="w-full h-full"
-          />
+            fill="none"
+            aria-hidden
+          >
+            <circle
+              cx="10.5"
+              cy="10.5"
+              r="6.5"
+              stroke="var(--forst-green)"
+              strokeWidth="1.6"
+            />
+            <path
+              d="M15.5 15.5L20 20"
+              stroke="var(--forst-green)"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
         </span>
 
         <span className="min-w-0 flex-1">
