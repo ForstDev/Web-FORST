@@ -173,18 +173,6 @@ function MarcoIsla() {
         </motion.g>
       </svg>
 
-      {/* Coordenadas de Lima como anotación de plano — ancla la imagen a
-          "Lima, Perú" del riel lateral en vez de ser un dato decorativo
-          inventado. */}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1.1 }}
-        className="absolute left-[8.5%] bottom-[8%] t-eyebrow text-[var(--forst-green)] opacity-50"
-      >
-        −12.0464° −77.0428°
-      </motion.span>
-
       {/* La isla: sujeto principal, flotando dentro del marco. */}
       <motion.div
         initial={{ opacity: 0, y: 26 }}

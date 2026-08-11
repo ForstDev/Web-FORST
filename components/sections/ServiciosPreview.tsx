@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { servicios } from "@/data/servicios";
 import PiezaGlyph from "@/components/ui/PiezaGlyph";
-import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import EtiquetaVertical from "@/components/ui/EtiquetaVertical";
 import Resaltado from "@/components/ui/Resaltado";
 import { fadeUp, staggerChildren } from "@/lib/motion-variants";
@@ -162,11 +161,13 @@ function DiagnosticoBanner() {
         className="group relative flex items-center gap-5 md:gap-6 rounded-2xl border border-[var(--forst-line)] px-6 py-5 md:px-8 md:py-6 hover:border-[var(--forst-green)]/40 hover:bg-[var(--forst-tint)] transition-colors"
       >
         <span className="shrink-0 w-9 h-9 md:w-10 md:h-10">
-          <AnimatedLogo
-            size={36}
-            color="var(--forst-green)"
-            bg="var(--forst-white)"
-            animateOnMount={false}
+          {/* El diamante en contorno, no relleno: mismo lenguaje que las
+              3 piezas de arriba, pero ni es el logo (ya se repite mucho
+              en el sitio) ni se confunde con el de Estructura, que va
+              relleno. */}
+          <PiezaGlyph
+            pieza={2}
+            stroke="var(--forst-green)"
             className="w-full h-full"
           />
         </span>
