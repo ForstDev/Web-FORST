@@ -38,7 +38,7 @@ export default function CaseContent({ caso }: { caso: Caso }) {
         El caso
       </EtiquetaVertical>
 
-      <div className="min-w-0 flex-1 grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+      <div className="min-w-0 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         {/* La página real: fija a un lado mientras se lee la historia. */}
         <motion.div
           variants={fadeUp}

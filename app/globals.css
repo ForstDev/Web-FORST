@@ -194,6 +194,18 @@ body {
   font-size: clamp(0.95rem, 1.7vw, 1.55rem);
 }
 
+/* El piso de 2.5rem de `.t-air` está calculado para teléfonos de 375px en
+   adelante. Por debajo de eso (iPhone SE de 1ª gen, Android chicos, un
+   plegable cerrado) una palabra larga del titular —"SOLUCIONES"— mide más
+   que el ancho útil de la columna y se sale del marco, recortada por el
+   overflow de la sección. Acá el piso baja y pasa a escalar con el
+   viewport, así la palabra entra completa en vez de cortarse. */
+@media (max-width: 360px) {
+  .t-air {
+    font-size: clamp(1.9rem, 9.4vw, 2.5rem);
+  }
+}
+
 /* Etiqueta rotada al borde de la sección, leyendo de abajo hacia arriba. */
 .t-vertical {
   writing-mode: vertical-rl;

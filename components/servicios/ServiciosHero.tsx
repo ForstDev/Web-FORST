@@ -22,7 +22,7 @@ export default function ServiciosHero() {
         Servicios
       </motion.p>
 
-      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-end">
         <h1 className="lg:col-span-7 t-h1 text-balance">
           <span className="text-[var(--forst-black)]">
             <WordReveal text="Tres planes, un mismo" />

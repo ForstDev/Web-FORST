@@ -61,7 +61,7 @@ export default function DiagnosticoFORST() {
             className="absolute -right-16 -bottom-20 w-72 h-72 md:w-96 md:h-96 opacity-[0.06] pointer-events-none"
           />
 
-          <div className="relative grid md:grid-cols-12 gap-10 md:gap-14 items-start">
+          <div className="relative grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-start">
             <motion.div
               variants={fadeUp}
               initial="hidden"

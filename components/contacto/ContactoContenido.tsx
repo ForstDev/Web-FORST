@@ -110,8 +110,11 @@ export default function ContactoContenido() {
     );
   };
 
+  // 16px y no 15: por debajo de ese tamaño, Safari en iOS hace zoom solo
+  // al enfocar un campo y deja la página descuadrada. El resto del sitio
+  // no lo sufre porque solo pasa en campos de formulario.
   const inputCls =
-    "w-full bg-transparent border-b border-[var(--forst-line)] py-3 text-[15px] text-black placeholder:text-black/35 focus:border-[var(--forst-green)] focus:outline-none transition-colors";
+    "w-full bg-transparent border-b border-[var(--forst-line)] py-3 text-[16px] text-black placeholder:text-black/35 focus:border-[var(--forst-green)] focus:outline-none transition-colors";
 
   return (
     <>
@@ -133,7 +136,7 @@ export default function ContactoContenido() {
           </span>
         </h1>
 
-        <div className="mt-10 grid md:grid-cols-12 gap-12 md:gap-16">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
           {/* Canal directo */}
           <motion.div
             variants={fadeUp}
@@ -174,14 +177,16 @@ export default function ContactoContenido() {
               </div>
             </a>
 
-            <div className="mt-8 flex flex-col gap-2 text-sm text-black/60">
+            <div className="mt-8 flex flex-col gap-1 text-sm text-black/60">
+              {/* `py-1.5` para que el área tocable del correo llegue al
+                  mínimo de 24px; con solo el alto de la línea quedaba en 20. */}
               <a
                 href="mailto:forst.pe@outlook.com"
-                className="hover:text-[var(--forst-green)] transition-colors w-fit"
+                className="py-1.5 hover:text-[var(--forst-green)] transition-colors w-fit"
               >
                 forst.pe@outlook.com
               </a>
-              <span>Lima, Perú. Atendemos a todo el país.</span>
+              <span className="py-1.5">Lima, Perú. Atendemos a todo el país.</span>
             </div>
           </motion.div>
 

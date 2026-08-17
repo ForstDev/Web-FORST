@@ -53,7 +53,7 @@ export default function Resultados() {
           Por qué FORST
         </EtiquetaVertical>
         <div className="min-w-0 flex-1">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           <div className="lg:col-span-8">
             <motion.h2
               variants={fadeUp}

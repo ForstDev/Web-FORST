@@ -211,9 +211,13 @@ export default function Hero() {
           </EtiquetaVertical>
 
           <div className="min-w-0 flex-1">
-            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Texto: arriba-izquierda, nunca centrado. */}
-              <div className="lg:col-span-5">
+              {/* `min-w-0`: por defecto un item de grid no encoge por
+                  debajo del ancho de su palabra más larga, así que en
+                  pantallas muy angostas el titular ensanchaba la columna
+                  y se salía del marco. */}
+              <div className="min-w-0 lg:col-span-5">
                 <h1 className="text-[var(--forst-green)]">
                   <span className="block t-air">
                     <WordReveal text="Creamos soluciones para negocios" />
@@ -243,22 +247,29 @@ export default function Hero() {
                   transition={{ delay: 1 }}
                   className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4"
                 >
+                  {/* `max-w-full` + `shrink-0` en el punto: un inline-flex
+                      toma el ancho de su contenido y no encoge, así que en
+                      pantallas muy angostas el botón ensanchaba la columna
+                      entera. Con el tope, el texto envuelve en dos líneas
+                      en vez de desbordar; donde entra, no cambia nada. */}
                   <Link
                     href="/contacto"
-                    className="group inline-flex items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-8 py-4 text-[12px] font-medium uppercase transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
-                    style={{ letterSpacing: "0.18em" }}
+                    className="group inline-flex max-w-full items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
+                    <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
                     Hablemos de tu negocio
                   </Link>
+                  {/* `py-1.5` para llegar al mínimo de área tocable; el
+                      subrayado sube a `bottom-0.5` para seguir pegado al
+                      texto en vez de quedar flotando bajo el padding. */}
                   <Link
                     href="/portafolio"
-                    className="group relative text-[13px] font-medium text-black/75 hover:text-[var(--forst-green)] transition-colors"
+                    className="group relative inline-block py-1.5 text-[13px] font-medium text-black/75 hover:text-[var(--forst-green)] transition-colors"
                   >
                     Ver casos reales
                     <span
                       aria-hidden
-                      className="absolute -bottom-1 left-0 h-px w-full bg-[var(--forst-green)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+                      className="absolute bottom-0.5 left-0 h-px w-full bg-[var(--forst-green)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
                     />
                   </Link>
                 </motion.div>

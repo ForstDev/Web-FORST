@@ -106,10 +106,14 @@ function Panel({
       {/* Toda la fila es el control de selección — con el mouse encima
           alcanza, no hace falta clickear para ver el plan. Vive aparte
           del contenido (no lo envuelve) para que el link del CTA siga
-          siendo clickeable sin anidar <a> dentro de <button>. */}
+          siendo clickeable sin anidar <a> dentro de <button>.
+          `onClick` es lo que lo hace usable en un teléfono: sin mouse no
+          hay hover, y tocar un botón no siempre le da foco (iOS Safari no
+          lo hace), así que sin esto el plan no abría de ninguna forma. */}
       <button
         onMouseEnter={onActivar}
         onFocus={onActivar}
+        onClick={onActivar}
         aria-expanded={activo}
         aria-label={`Plan ${servicio.titulo}`}
         className="absolute inset-0 z-20 cursor-pointer"

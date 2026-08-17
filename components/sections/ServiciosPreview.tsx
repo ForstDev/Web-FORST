@@ -220,14 +220,14 @@ export default function ServiciosPreview() {
     <section className="relative seccion">
       <div className="relative max-w-[104rem] mx-auto px-6 md:px-10 flex gap-8 lg:gap-14">
         <EtiquetaVertical className="pt-2">Servicios</EtiquetaVertical>
-        <div className="min-w-0 flex-1 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="min-w-0 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Columna de texto */}
           <motion.div
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.4 }}
-            className="lg:col-span-5 lg:sticky lg:top-32"
+            className="min-w-0 lg:col-span-5 lg:sticky lg:top-32"
           >
             <h2>
               <span className="block t-air text-[var(--forst-green)]">

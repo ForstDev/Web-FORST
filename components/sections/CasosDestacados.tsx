@@ -32,7 +32,7 @@ function BloqueCaso({ caso, index }: { caso: Caso; index: number }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      className="grid lg:grid-cols-12 gap-8 lg:gap-14 items-center"
+      className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center"
     >
       {/* La página real, funcionando */}
       <div
@@ -95,9 +95,9 @@ function BloqueCaso({ caso, index }: { caso: Caso; index: number }) {
 
         <Link
           href={`/portafolio/${caso.slug}`}
-          className="group inline-flex items-center gap-3 mt-8 text-sm font-medium text-[var(--forst-green)]"
+          className="group inline-flex items-center gap-3 mt-8 py-1.5 text-sm font-medium text-[var(--forst-green)]"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
+          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
           <span className="relative">
             Ver el caso completo
             <span
@@ -149,9 +149,9 @@ export default function CasosDestacados() {
       >
         <Link
           href="/portafolio"
-          className="group inline-flex items-center gap-3 text-sm font-medium text-[var(--forst-green)]"
+          className="group inline-flex items-center gap-3 py-1.5 text-sm font-medium text-[var(--forst-green)]"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
+          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
           Todo el portafolio
         </Link>
       </motion.div>

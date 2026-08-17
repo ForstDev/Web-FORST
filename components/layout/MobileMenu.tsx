@@ -40,9 +40,22 @@ export default function MobileMenu({
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          // AnimatePresence necesita una `key` estable para seguirle el
+          // rastro a lo que entra y sale: sin ella no completaba la salida
+          // y el overlay quedaba montado para siempre, invisible pero
+          // tapando la página, y al reabrir reutilizaba ese nodo muerto.
+          key="menu-movil"
+          initial={{ opacity: 0, pointerEvents: "none" }}
+          animate={{ opacity: 1, pointerEvents: "auto" }}
+          // Al tocar un link, la navegación de Next re-renderiza el árbol
+          // en medio de la animación de salida y AnimatePresence se queda
+          // sin quitar el nodo: el overlay permanecía montado, ya
+          // invisible, pero interceptando cada toque en el centro de la
+          // pantalla — la página se veía normal y no respondía a nada.
+          // `pointerEvents` viaja en el propio `exit` (y no en `style`,
+          // que queda congelado con el valor del último render abierto)
+          // para que deje de capturar eventos apenas empieza a cerrarse.
+          exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.35 }}
           className="fixed inset-0 z-[80] bg-[var(--forst-green)] text-white flex flex-col md:hidden"
         >

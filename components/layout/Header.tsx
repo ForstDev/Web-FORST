@@ -58,6 +58,19 @@ export default function Header() {
   const enCasoDetalle = /^\/portafolio\/[^/]+\/?$/.test(pathname);
   const enHome = pathname === "/";
 
+  // El menú se cierra solo al tocar un link, pero si esa navegación
+  // llegara a interrumpir el cierre, quedaría abierto sobre la página
+  // nueva. Cerrarlo también al cambiar de ruta lo deja siempre en un
+  // estado coherente, venga el cambio de donde venga (link, botón atrás).
+  // Ajustado durante el render y no en un efecto: es el patrón que React
+  // recomienda para estado derivado de un valor que cambia, y evita el
+  // render extra que provoca un setState dentro de useEffect.
+  const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
+  if (rutaDelMenu !== pathname) {
+    setRutaDelMenu(pathname);
+    setOpen(false);
+  }
+
   // En el resto del sitio el umbral es chico, nomás para pasar de
   // transparente a blanco sólido. En Inicio el umbral real es dónde
   // termina la fila de navegación del marco del Hero — se mide contra

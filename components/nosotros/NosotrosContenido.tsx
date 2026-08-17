@@ -40,7 +40,7 @@ export default function NosotrosContenido() {
           </span>
         </h1>
 
-        <div className="mt-10 grid md:grid-cols-12 gap-10">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-10">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -256,7 +256,7 @@ export default function NosotrosContenido() {
               <motion.div
                 key={v.nombre}
                 variants={fadeUp}
-                className="group grid md:grid-cols-12 items-center gap-2 md:gap-8 py-6 md:py-8 px-2 -mx-2 md:px-4 md:-mx-4 border-b border-[var(--forst-line)] hover:bg-[var(--forst-tint)] transition-colors"
+                className="group grid grid-cols-1 md:grid-cols-12 items-center gap-2 md:gap-8 py-6 md:py-8 px-2 -mx-2 md:px-4 md:-mx-4 border-b border-[var(--forst-line)] hover:bg-[var(--forst-tint)] transition-colors"
               >
                 <span className="md:col-span-1 font-display text-sm text-black/65 group-hover:text-[var(--forst-green)] transition-colors">
                   0{i + 1}

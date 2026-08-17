@@ -32,8 +32,13 @@ export default function Footer() {
             </p>
           </div>
 
+          {/* `py-2` en cada enlace: con solo el alto de la línea, el área
+              táctil quedaba en 20px, por debajo del mínimo de 24px que pide
+              la WCAG y muy incómoda para el dedo en una lista apretada. El
+              `gap` baja de 3 a 1 para compensar, así el espaciado visual
+              queda casi igual y lo que crece es la zona tocable. */}
           <div className="flex gap-16">
-            <nav className="flex flex-col gap-3 text-sm">
+            <nav className="flex flex-col gap-1 text-sm">
               <span className="text-white/55 text-xs tracking-wider uppercase mb-1">
                 Mapa
               </span>
@@ -41,14 +46,14 @@ export default function Footer() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="text-white/75 hover:text-[var(--forst-white)] transition-colors w-fit"
+                  className="py-2 text-white/75 hover:text-[var(--forst-white)] transition-colors w-fit"
                 >
                   {l.label}
                 </Link>
               ))}
             </nav>
 
-            <div className="flex flex-col gap-3 text-sm">
+            <div className="flex flex-col gap-1 text-sm">
               <span className="text-white/55 text-xs tracking-wider uppercase mb-1">
                 Contacto
               </span>
@@ -56,17 +61,17 @@ export default function Footer() {
                 href="https://wa.me/51962316856"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/75 hover:text-[var(--forst-white)] transition-colors"
+                className="py-2 w-fit text-white/75 hover:text-[var(--forst-white)] transition-colors"
               >
                 WhatsApp
               </a>
               <a
                 href="mailto:forst.pe@outlook.com"
-                className="text-white/75 hover:text-[var(--forst-white)] transition-colors"
+                className="py-2 w-fit text-white/75 hover:text-[var(--forst-white)] transition-colors"
               >
                 forst.pe@outlook.com
               </a>
-              <span className="text-white/75">Lima, Perú</span>
+              <span className="py-2 text-white/75">Lima, Perú</span>
             </div>
           </div>
         </div>

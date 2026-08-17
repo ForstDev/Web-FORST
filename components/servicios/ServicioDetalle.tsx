@@ -25,7 +25,7 @@ export default function ServicioDetalle({
       id={servicio.slug}
       className="border-t border-[var(--forst-line)] scroll-mt-20"
     >
-      <div className="max-w-[104rem] mx-auto px-6 md:px-10 py-14 md:py-20 grid md:grid-cols-12 gap-10 md:gap-12">
+      <div className="max-w-[104rem] mx-auto px-6 md:px-10 py-14 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12">
         {/* Columna izquierda: identidad del servicio (sticky) */}
         <div className="md:col-span-4">
           <div className="relative md:sticky md:top-28 overflow-hidden rounded-2xl border border-[var(--forst-line)] p-7 md:p-8">
