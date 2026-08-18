@@ -48,9 +48,14 @@ export default function CookieConsent() {
             transition={{ duration: 0.4, ease: EASE }}
             className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[90] rounded-2xl border border-[var(--forst-line)] bg-[var(--forst-white)] p-5 shadow-[0_8px_32px_rgba(0,46,44,0.14)]"
           >
-            <p className="text-[13px] leading-relaxed text-black/70">
-              Este sitio usa cookies para mejorar tu experiencia de
-              navegación.
+            {/* `text-balance` reparte el texto en líneas de largo
+                parecido en vez del corte por defecto del navegador, que
+                dejaba 6 palabras arriba y 1 sola abajo. Forzar una sola
+                línea con `nowrap` se probó y se salía de la tarjeta en
+                pantallas angostas (320px); esto se adapta a cualquier
+                ancho sin ese riesgo. */}
+            <p className="text-[13px] leading-relaxed text-black/70 text-balance">
+              Usamos cookies para mejorar la experiencia.
             </p>
             <div className="mt-5 flex items-center gap-4">
               <button
