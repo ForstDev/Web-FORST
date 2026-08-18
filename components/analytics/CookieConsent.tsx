@@ -49,11 +49,10 @@ export default function CookieConsent() {
             className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[90] rounded-2xl border border-[var(--forst-line)] bg-[var(--forst-white)] p-5 shadow-[0_8px_32px_rgba(0,46,44,0.14)]"
           >
             <p className="text-[13px] leading-relaxed text-black/70">
-              Usamos cookies de Google Analytics para saber cómo llega y
-              navega la gente en el sitio. No se activan hasta que lo
-              aceptes.
+              Este sitio usa cookies para mejorar tu experiencia de
+              navegación.
             </p>
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-5 flex items-center gap-4">
               <button
                 onClick={() => elegir("aceptado")}
                 className="rounded-full bg-[var(--forst-green)] text-white px-5 py-2.5 text-[12px] font-medium uppercase tracking-wide hover:bg-[var(--forst-green-soft)] transition-colors"
