@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
+import CookieConsent from "@/components/analytics/CookieConsent";
 
 const poppins = localFont({
   variable: "--font-poppins",
@@ -54,6 +55,7 @@ export default function RootLayout({
           <Footer />
           <GrainOverlay />
           <CustomCursor />
+          <CookieConsent />
         </SmoothScrollProvider>
       </body>
     </html>
