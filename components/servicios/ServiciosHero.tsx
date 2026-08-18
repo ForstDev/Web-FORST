@@ -39,10 +39,11 @@ export default function ServiciosHero() {
           transition={{ delay: 0.9 }}
           className="lg:col-span-5 t-lead measure text-black/60"
         >
-          De tu primera presencia digital al rediseño completo de la
-          operación. Cada plan responde a dónde está tu negocio hoy, no a un
-          catálogo de productos sueltos. Todos quedan funcionando desde el
-          día uno, y seguimos contigo después del lanzamiento.
+          De tu primera página web al rediseño completo de cómo trabaja tu
+          empresa. Cada plan corresponde a una etapa distinta, así que
+          eliges según el momento en el que está tu negocio hoy. Los tres
+          quedan funcionando desde el día uno, y seguimos contigo después
+          del lanzamiento.
         </motion.p>
       </div>
     </section>

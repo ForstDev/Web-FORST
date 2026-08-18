@@ -236,8 +236,8 @@ export default function Hero() {
                 >
                   Una plataforma empresarial{" "}
                   <Resaltado delay={1.3}>hecha a la medida</Resaltado> de tu
-                  negocio. Construida desde cero, sin plantillas que ya usan
-                  mil negocios más.
+                  negocio. La diseñamos desde cero, con la cara de tu marca y
+                  no la de una plantilla.
                 </motion.p>
 
                 <motion.div

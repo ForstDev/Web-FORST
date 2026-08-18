@@ -327,9 +327,9 @@ export default function NosotrosContenido() {
             viewport={{ once: true, amount: 0.5 }}
             className="font-display font-medium text-3xl md:text-5xl leading-tight max-w-3xl text-pretty"
           >
-            El post-venta no es un extra.
+            El acompañamiento después de la entrega
             <br />
-            <span className="text-white/55">Es la mitad del servicio.</span>
+            <span className="text-white/55">es la mitad del servicio.</span>
           </motion.h2>
 
           <motion.div
@@ -343,7 +343,7 @@ export default function NosotrosContenido() {
               {
                 titulo: "Ajustes con datos",
                 texto:
-                  "Lo que se entrega se observa. Si algo no está convirtiendo o no se usa, se corrige, con datos reales, no supuestos.",
+                  "Seguimos mirando cómo funciona lo que entregamos. Si una parte no se usa o no te está trayendo clientes, la corregimos según lo que muestran los números.",
               },
               {
                 titulo: "Seguimiento de marca",

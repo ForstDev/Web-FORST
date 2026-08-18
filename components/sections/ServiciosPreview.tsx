@@ -248,9 +248,9 @@ export default function ServiciosPreview() {
             </h2>
 
             <p className="t-lead mt-7 measure text-black/65">
-              De tu primera presencia digital al rediseño completo de la
-              operación. Cada plan responde a dónde está tu negocio hoy, no a
-              un catálogo de productos sueltos.
+              De tu primera página web al rediseño completo de cómo trabaja
+              tu empresa. Cada plan corresponde a una etapa distinta, así que
+              eliges según el momento en el que está tu negocio hoy.
             </p>
             <p className="mt-4 text-[15px] leading-relaxed measure text-black/70">
               Todos{" "}

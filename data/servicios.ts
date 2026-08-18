@@ -33,11 +33,11 @@ export const servicios: Servicio[] = [
     titulo: "Presencia",
     herramienta: "El punto de partida",
     resumen:
-      "Tu primera presencia digital de verdad, no una tarjeta de presentación improvisada.",
+      "Tu primera página web profesional, diseñada a la medida de tu negocio.",
     descripcion:
-      "Para negocios que todavía no existen digitalmente, o que tienen algo armado a medias y quieren modernizarlo. Construimos tu web o landing desde cero, nunca sobre una plantilla que ya usan otros mil negocios, con todo lo que necesita un cliente para encontrarte, escribirte y confiar en lo que ve.",
+      "Para negocios que todavía no tienen página web, o que tienen una hecha a medias y quieren renovarla. La construimos desde cero, con todo lo que un cliente necesita para encontrarte, escribirte y confiar en lo que ve.",
     incluye: [
-      "Web o landing a la medida, nunca plantilla",
+      "Página web diseñada a tu medida",
       "Dominio y hosting configurados",
       "Formularios y WhatsApp Business que sí funcionan",
       "Base de datos en la nube",
@@ -60,17 +60,17 @@ export const servicios: Servicio[] = [
     titulo: "Operación",
     herramienta: "Ordena lo que ya vendes",
     resumen:
-      "Para negocios que ya venden pero quieren la tecnología trabajando a su favor, no en un cuaderno aparte.",
+      "Para negocios que ya venden y quieren dejar de llevar el control a mano.",
     descripcion:
-      "Todo lo del plan Presencia, más un CRM a tu medida: los leads entran directo, las cotizaciones y respuestas se disparan solas, y un dashboard te muestra cómo va el negocio sin que nadie tenga que armarlo a mano cada fin de mes. Empezamos con un diagnóstico de tus flujos más críticos antes de tocar nada.",
+      "Todo lo del plan Presencia, más un sistema hecho a tu medida para ordenar las ventas: cada consulta que llega queda registrada sola, las cotizaciones y respuestas salen automáticas, y un panel te muestra cómo va el negocio sin que nadie arme el reporte a mano cada fin de mes. Antes de tocar nada, revisamos las partes del día a día que más te están costando.",
     incluye: [
       "Todo lo del plan Presencia",
-      "Diagnóstico de flujos críticos",
-      "CRM personalizado",
-      "Leads que entran directo a tu CRM",
+      "Revisión de los procesos que más te cuestan",
+      "CRM propio para ordenar a tus clientes",
+      "Cada consulta entra sola al sistema",
       "Respuestas y cotizaciones automáticas",
       "Recordatorios y reportes de ventas",
-      "Dashboard a medida + acompañamiento mensual",
+      "Panel de control a medida y acompañamiento mensual",
     ],
     paraQuien: [
       "Negocios que ya venden pero operan a mano",
@@ -88,11 +88,11 @@ export const servicios: Servicio[] = [
     titulo: "Estructura",
     herramienta: "Rediseña toda la operación",
     resumen:
-      "Para empresas que ya operan y necesitan ordenar y escalar toda la operación con FORST al costado.",
+      "Para empresas que ya funcionan y necesitan ordenar el trabajo interno antes de crecer.",
     descripcion:
-      "El rediseño completo: mapeamos cómo trabajan todas tus áreas, reordenamos los procesos que ya no dan abasto y construimos el sistema (CRM, automatizaciones, agentes de IA) que sostiene ese crecimiento, integrado con las herramientas que tu equipo ya usa y no quiere perder.",
+      "El rediseño completo: revisamos cómo trabaja cada área, reordenamos los procesos que ya no dan abasto y construimos el sistema (CRM, automatizaciones, agentes de IA) que sostiene ese crecimiento, conectado con las herramientas que tu equipo ya usa.",
     incluye: [
-      "Diagnóstico operativo completo",
+      "Revisión completa de cómo trabaja la empresa",
       "Rediseño de procesos entre áreas",
       "CRM a la medida del negocio",
       "Automatizaciones y agentes de IA",
