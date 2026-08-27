@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
 import { Servicio } from "@/data/servicios";
 import PiezaGlyph from "@/components/ui/PiezaGlyph";
 import Star from "@/components/ui/Star";
@@ -197,12 +198,14 @@ function Panel({
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.45, ease: EASE, delay: 0.12 }}
-                className="shrink-0 w-full md:w-64 lg:w-72 aspect-[16/10] md:aspect-[4/3] rounded-xl overflow-hidden"
+                className="relative shrink-0 w-full md:w-64 lg:w-72 aspect-[16/10] md:aspect-[4/3] rounded-xl overflow-hidden"
               >
-                <img
+                <Image
                   src={servicio.imagen}
                   alt={servicio.imagenAlt}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 288px"
+                  className="object-cover"
                 />
               </motion.div>
 

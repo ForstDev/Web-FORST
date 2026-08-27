@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { portafolio, Caso } from "@/data/portafolio";
 import PaginaMockup from "@/components/portafolio/PaginaMockup";
@@ -67,10 +68,12 @@ function BloqueCaso({ caso, index }: { caso: Caso; index: number }) {
             className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-xl shrink-0 p-5"
             style={{ background: caso.fondo }}
           >
-            <img
+            <Image
               src={caso.logo}
               alt={caso.logoAlt}
-              className="max-w-full max-h-full object-contain"
+              width={400}
+              height={200}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
             />
           </span>
         </div>

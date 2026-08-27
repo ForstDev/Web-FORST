@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   motion,
   AnimatePresence,
@@ -61,11 +62,13 @@ function PanelCaso({
           era un rectángulo de color liso y nada más. Se atenúa al pasar
           el cursor para que el contenido expandido siga leyéndose sobre
           un fondo casi sólido. */}
-      <img
+      <Image
         src={caso.imagen}
         alt=""
         aria-hidden
-        className="absolute inset-0 w-full h-full object-cover opacity-35 group-hover:opacity-10 transition-opacity duration-500"
+        fill
+        sizes="(max-width: 768px) 100vw, 33vw"
+        className="object-cover opacity-35 group-hover:opacity-10 transition-opacity duration-500"
       />
       <span
         aria-hidden
@@ -109,10 +112,12 @@ function PanelCaso({
           </span>
         </div>
 
-        <img
+        <Image
           src={caso.logo}
           alt={caso.logoAlt}
-          className="max-w-[45%] max-h-9 md:max-h-10 object-contain shrink-0"
+          width={400}
+          height={200}
+          className="max-w-[45%] max-h-9 md:max-h-10 w-auto h-auto object-contain shrink-0"
         />
 
         <PaginaMockup

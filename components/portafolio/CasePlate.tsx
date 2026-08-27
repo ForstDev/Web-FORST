@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Image from "next/image";
 import { Caso } from "@/data/portafolio";
 import Star from "@/components/ui/Star";
 
@@ -45,9 +46,11 @@ export default function CasePlate({
         className="relative w-full overflow-hidden rounded-xl flex items-center justify-center"
         style={{ background: composicionClaro ? "var(--forst-white)" : "var(--forst-black)" }}
       >
-        <img
+        <Image
           src={caso.composicion}
           alt={`${caso.titulo}, en alianza con FORST`}
+          width={1200}
+          height={500}
           className="w-full h-[26vh] md:h-[34vh] object-contain p-12 md:p-16"
         />
         <div
@@ -76,11 +79,13 @@ export default function CasePlate({
     >
       {/* La escena real del caso, de fondo — misma idea que la persiana
           de desktop: la tarjeta deja de ser un rectángulo de color liso. */}
-      <img
+      <Image
         src={caso.imagen}
         alt=""
         aria-hidden
-        className="absolute inset-0 w-full h-full object-cover opacity-25"
+        fill
+        sizes="(max-width: 768px) 100vw, 33vw"
+        className="object-cover opacity-25"
       />
       <span
         aria-hidden
@@ -108,10 +113,12 @@ export default function CasePlate({
       </div>
 
       <div className="relative z-10 flex-1 flex items-center justify-center px-10 py-4">
-        <img
+        <Image
           src={caso.logo}
           alt={caso.logoAlt}
-          className="max-w-[62%] max-h-[38%] object-contain"
+          width={400}
+          height={200}
+          className="max-w-[62%] max-h-[38%] w-auto h-auto object-contain"
         />
       </div>
 

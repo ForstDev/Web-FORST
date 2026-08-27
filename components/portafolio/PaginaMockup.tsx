@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { Caso } from "@/data/portafolio";
 
 const VELOCIDAD = 1.5;
@@ -124,9 +125,12 @@ export default function PaginaMockup({
             aria-label={caso.paginaPreviewAlt}
           />
         ) : (
-          <img
+          <Image
             src={caso.paginaPreview}
             alt={caso.paginaPreviewAlt}
+            width={1200}
+            height={686}
+            sizes="(max-width: 768px) 100vw, 50vw"
             className={mediaClassName}
           />
         )}

@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
 import CookieConsent from "@/components/analytics/CookieConsent";
+import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 
 const poppins = localFont({
   variable: "--font-poppins",
@@ -35,10 +36,22 @@ const lexendGiga = Lexend_Giga({
   weight: ["600", "700"],
 });
 
+const SITE_URL = "https://web-forst.vercel.app";
+
 export const metadata: Metadata = {
+  // Sin esto, las URLs de imágenes para compartir (Open Graph) y las
+  // rutas del sitemap quedarían relativas — Google y WhatsApp necesitan
+  // la dirección completa para poder resolverlas.
+  metadataBase: new URL(SITE_URL),
   title: "FORST — Plataforma empresarial que no desaparece",
   description:
     "FORST es una plataforma empresarial peruana. Páginas y tiendas online, automatizaciones y dashboards para negocios que están listos para evolucionar, con acompañamiento real después de la entrega.",
+  // Acá va el código de Google Search Console cuando lo tengas — ver
+  // instrucciones en la respuesta del chat. Mientras esté vacío, Next.js
+  // simplemente no imprime la etiqueta, así que no rompe nada dejarlo así.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export default function RootLayout({
@@ -49,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${poppins.variable} ${montserrat.variable} ${lexendGiga.variable}`}>
       <body className="antialiased">
+        <OrganizationJsonLd />
         <SmoothScrollProvider>
           <Header />
           <main>{children}</main>

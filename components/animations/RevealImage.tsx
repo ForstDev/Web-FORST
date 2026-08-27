@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 /**
  * Imagen con revelado editorial: cortina que sube + la imagen asienta
@@ -84,12 +85,14 @@ export default function RevealImage({
       ref={ref}
       className={`${posClass} overflow-hidden rounded-xl ${className}`}
     >
-      <img
+      <Image
         src={src}
         alt={alt}
-        loading={priority ? "eager" : "lazy"}
+        fill
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, 50vw"
         draggable={false}
-        className="absolute inset-0 w-full h-full object-cover select-none"
+        className="object-cover select-none"
         style={{
           clipPath: visible ? "inset(0% 0% 0% 0%)" : "inset(100% 0% 0% 0%)",
           transform: visible ? "scale(1)" : "scale(1.08)",
