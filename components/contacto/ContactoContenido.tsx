@@ -206,6 +206,7 @@ export default function ContactoContenido() {
                 </span>
                 <input
                   required
+                  maxLength={80}
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                   placeholder="¿Cómo te llamas?"
@@ -218,6 +219,7 @@ export default function ContactoContenido() {
                 </span>
                 <input
                   required
+                  maxLength={80}
                   value={form.negocio}
                   onChange={(e) => setForm({ ...form, negocio: e.target.value })}
                   placeholder="Nombre y rubro"
@@ -249,6 +251,7 @@ export default function ContactoContenido() {
               </span>
               <textarea
                 rows={4}
+                maxLength={600}
                 value={form.mensaje}
                 onChange={(e) => setForm({ ...form, mensaje: e.target.value })}
                 placeholder="Qué vendes, qué te está costando, qué quisieras lograr…"

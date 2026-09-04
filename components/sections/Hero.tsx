@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 import WordReveal from "@/components/animations/WordReveal";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
@@ -180,13 +181,28 @@ function MarcoIsla() {
         transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
         className="absolute inset-0 flex items-center justify-center"
       >
-        <motion.img
-          src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/hero-isla.webp"
-          alt="Isla de musgo con una laptop, como escenario de trabajo de FORST"
+        {/* La flotación se mueve al contenedor: next/image no admite el
+            prop `animate` de Framer directo (no es un componente motion),
+            así que el bobbing pasa a envolverlo en vez de aplicarse a la
+            imagen — mismo efecto visual, la imagen queda optimizada. Es
+            la más pesada de "peso visual" del sitio y la primera en
+            cargar, así que lleva `priority` para que no espere su turno
+            en la cola de carga diferida. */}
+        <motion.div
           animate={{ y: [0, -12, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
-          className="w-[74%] h-auto drop-shadow-[0_30px_44px_rgba(0,46,44,0.22)]"
-        />
+          className="w-[74%]"
+        >
+          <Image
+            src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/hero-isla.webp"
+            alt="Isla de musgo con una laptop, como escenario de trabajo de FORST"
+            width={1122}
+            height={1284}
+            priority
+            sizes="(max-width: 1024px) 74vw, 444px"
+            className="w-full h-auto drop-shadow-[0_30px_44px_rgba(0,46,44,0.22)]"
+          />
+        </motion.div>
       </motion.div>
     </div>
   );
