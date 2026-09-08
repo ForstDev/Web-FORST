@@ -125,8 +125,8 @@ export default function CasosDestacados() {
           </h2>
         </div>
         <p className="t-lead measure-tight text-black/70 lg:pb-2">
-          Dos marcas de rubros distintos, transformadas con la misma
-          metodología. Estas son sus páginas,{" "}
+          Una marca real, transformada con nuestra metodología. Esta es su
+          página,{" "}
           <Resaltado>funcionando ahora mismo.</Resaltado>
         </p>
       </div>

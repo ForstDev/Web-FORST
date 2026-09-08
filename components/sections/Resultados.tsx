@@ -23,8 +23,8 @@ const DATOS = [
     label: "Solo equipo del inicio al soporte. Tu proyecto no se subcontrata a terceros.",
   },
   {
-    numero: "2",
-    label: "Rubros distintos, ya transformados con la misma metodología.",
+    numero: "5",
+    label: "Fases de nuestra metodología, siempre en el mismo orden.",
   },
   {
     numero: "100%",
