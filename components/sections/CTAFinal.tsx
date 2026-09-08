@@ -33,7 +33,7 @@ export default function CTAFinal() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.6 }}
-                className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-white/50 mb-5"
+                className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-white/62 mb-5"
               >
                 <span className="w-2 h-2 rotate-45 bg-[var(--forst-tan)] inline-block" />
                 El siguiente paso
@@ -52,7 +52,7 @@ export default function CTAFinal() {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ delay: 0.3 }}
-                className="mt-4 text-xs text-white/50"
+                className="mt-4 text-xs text-white/62"
               >
                 Respuesta el mismo día. Sin compromiso.
               </motion.p>

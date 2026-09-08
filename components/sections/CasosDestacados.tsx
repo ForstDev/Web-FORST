@@ -3,12 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { portafolio, Caso } from "@/data/portafolio";
+import { casosVisibles, Caso } from "@/data/portafolio";
 import PaginaMockup from "@/components/portafolio/PaginaMockup";
 import EtiquetaVertical from "@/components/ui/EtiquetaVertical";
 import Star from "@/components/ui/Star";
 import Resaltado from "@/components/ui/Resaltado";
-import { fadeUp, EASE } from "@/lib/motion-variants";
+import { fadeUp } from "@/lib/motion-variants";
 
 /**
  * Casos en la home: dos bloques grandes alternados, cada uno mostrando la
@@ -98,16 +98,10 @@ function BloqueCaso({ caso, index }: { caso: Caso; index: number }) {
 
         <Link
           href={`/portafolio/${caso.slug}`}
-          className="group inline-flex items-center gap-3 mt-8 py-1.5 text-sm font-medium text-[var(--forst-green)]"
+          className="group inline-flex items-center gap-3 mt-8 rounded-full bg-[var(--forst-green)] text-white px-6 py-3 text-sm font-medium hover:bg-[var(--forst-green-soft)] transition-colors"
         >
-          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
-          <span className="relative">
-            Ver el caso completo
-            <span
-              aria-hidden
-              className="absolute -bottom-1 left-0 h-px w-full bg-current origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-            />
-          </span>
+          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-white group-hover:translate-x-1 transition-transform" />
+          Ver el caso completo
         </Link>
       </div>
     </motion.article>
@@ -138,26 +132,10 @@ export default function CasosDestacados() {
       </div>
 
       <div className="flex flex-col gap-20 md:gap-28">
-        {portafolio.map((caso, i) => (
+        {casosVisibles.map((caso, i) => (
           <BloqueCaso key={caso.slug} caso={caso} index={i} />
         ))}
       </div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 0.5, ease: EASE }}
-        className="mt-16 md:mt-20 pt-8 border-t border-[var(--forst-line)]"
-      >
-        <Link
-          href="/portafolio"
-          className="group inline-flex items-center gap-3 py-1.5 text-sm font-medium text-[var(--forst-green)]"
-        >
-          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current group-hover:translate-x-1 transition-transform" />
-          Todo el portafolio
-        </Link>
-      </motion.div>
       </div>
     </section>
   );

@@ -123,7 +123,7 @@ export default function ContactoContenido() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-7"
+          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
         >
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Contacto
@@ -283,7 +283,7 @@ export default function ContactoContenido() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.6 }}
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-4"
+          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-4"
         >
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Preguntas honestas

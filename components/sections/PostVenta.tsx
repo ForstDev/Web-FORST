@@ -124,7 +124,7 @@ export default function PostVenta() {
     <section className="relative bg-[var(--forst-green)] text-white overflow-hidden">
       <CurvaDivisoria />
       <div className="max-w-6xl mx-auto px-6 md:px-10 pt-16 pb-24 md:pt-24 md:pb-24">
-        <p className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-white/50 mb-6">
+        <p className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-white/62 mb-6">
           <span className="w-2 h-2 rotate-45 bg-white inline-block" />
           El diferencial
         </p>
@@ -150,7 +150,7 @@ export default function PostVenta() {
             <p className="font-display text-3xl md:text-4xl text-white">
               24–48h
             </p>
-            <p className="mt-1.5 text-[11px] tracking-[0.05em] uppercase text-white/50 leading-relaxed">
+            <p className="mt-1.5 text-[11px] tracking-[0.05em] uppercase text-white/62 leading-relaxed">
               Tiempo de respuesta promedio, incluso meses después de la entrega.
             </p>
           </div>
@@ -160,7 +160,7 @@ export default function PostVenta() {
         {/* ——— Desktop: líneas horizontales ——— */}
         <div className="hidden md:block mt-16 space-y-20">
           <div>
-            <p className="text-[11px] tracking-[0.07em] uppercase text-white/40 mb-6">
+            <p className="text-[11px] tracking-[0.07em] uppercase text-white/54 mb-6">
               Una agencia típica
             </p>
             <div className="relative h-10">
@@ -177,7 +177,7 @@ export default function PostVenta() {
                   <span className="absolute inset-0 m-auto w-3.5 h-px bg-white/45 rotate-45" />
                   <span className="absolute inset-0 m-auto w-3.5 h-px bg-white/45 -rotate-45" />
                 </span>
-                <p className="mt-3 -translate-x-1/2 w-44 text-[11px] text-white/45">
+                <p className="mt-3 -translate-x-1/2 w-44 text-[11px] text-white/58">
                   Entrega: fin del contacto.
                 </p>
               </motion.div>
@@ -227,7 +227,7 @@ export default function PostVenta() {
 
         {/* ——— Mobile: línea vertical ——— */}
         <div className="md:hidden mt-16">
-          <p className="text-[11px] tracking-[0.07em] uppercase text-white/40 mb-4">
+          <p className="text-[11px] tracking-[0.07em] uppercase text-white/54 mb-4">
             Una agencia típica
           </p>
           <div className="relative pl-6 pb-8">
@@ -236,7 +236,7 @@ export default function PostVenta() {
               style={{ height: tipicaWidth }}
               className="absolute left-0 top-0 w-px bg-white/35"
             />
-            <p className="text-sm text-white/45">Entrega: fin del contacto.</p>
+            <p className="text-sm text-white/58">Entrega: fin del contacto.</p>
           </div>
 
           <p className="text-[11px] tracking-[0.07em] uppercase text-white/70 mt-10 mb-4">

@@ -9,7 +9,7 @@ import {
   useMotionValue,
   useSpring,
 } from "motion/react";
-import { portafolio, Caso } from "@/data/portafolio";
+import { casosVisibles, Caso } from "@/data/portafolio";
 import CasePlate from "./CasePlate";
 import CaseContent from "./CaseContent";
 import PaginaMockup from "./PaginaMockup";
@@ -104,7 +104,7 @@ function PanelCaso({
       {/* Expandida: contenido completo */}
       <div className="absolute inset-0 flex flex-col gap-3 md:gap-4 p-6 md:p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
         <div
-          className={`flex items-center justify-between text-[10px] md:text-[11px] tracking-[0.07em] uppercase shrink-0 ${claro ? "text-white/50" : "text-black/65"}`}
+          className={`flex items-center justify-between text-[10px] md:text-[11px] tracking-[0.07em] uppercase shrink-0 ${claro ? "text-white/62" : "text-black/65"}`}
         >
           <span>{caso.sector}</span>
           <span className={claro ? "text-white/70" : "text-black/65"}>
@@ -221,7 +221,7 @@ export default function PortafolioGrid() {
   useEffect(() => {
     const onPop = () => {
       const m = window.location.pathname.match(/^\/portafolio\/([^/]+)\/?$/);
-      const caso = m ? portafolio.find((c) => c.slug === m[1]) ?? null : null;
+      const caso = m ? casosVisibles.find((c) => c.slug === m[1]) ?? null : null;
       setActivo(caso);
     };
     window.addEventListener("popstate", onPop);
@@ -253,7 +253,7 @@ export default function PortafolioGrid() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-7"
+          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
         >
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Casos
@@ -285,7 +285,7 @@ export default function PortafolioGrid() {
           onPointerMove={onGridPointerMove}
           className="hidden md:flex mt-16 md:mt-20 aspect-[3/2] lg:aspect-[12/5] gap-3"
         >
-          {portafolio.map((caso, i) => (
+          {casosVisibles.map((caso, i) => (
             <PanelCaso
               key={caso.slug}
               caso={caso}
@@ -300,7 +300,7 @@ export default function PortafolioGrid() {
 
         {/* Apiladas: mobile */}
         <div className="md:hidden mt-16 flex flex-col gap-5">
-          {portafolio.map((caso, i) => (
+          {casosVisibles.map((caso, i) => (
             <motion.button
               key={caso.slug}
               initial={{ opacity: 0, y: 32 }}
@@ -322,7 +322,7 @@ export default function PortafolioGrid() {
             <span className="font-display text-xl text-[var(--forst-green)]">
               ¿Tu negocio?
             </span>
-            <span className="text-xs text-black/50 flex items-center gap-2">
+            <span className="text-xs text-black/60 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--forst-green)] group-hover:translate-x-1 transition-transform" />
               Conversemos
             </span>
@@ -382,11 +382,11 @@ export default function PortafolioGrid() {
                   className="w-1.5 h-1.5 shrink-0 rotate-45 group-hover:-translate-x-1 transition-transform"
                   style={{ background: activo.acento }}
                 />
-                Volver a casos
+                Volver
               </button>
               <CasePlate
                 caso={activo}
-                index={portafolio.findIndex((c) => c.slug === activo.slug)}
+                index={casosVisibles.findIndex((c) => c.slug === activo.slug)}
                 hero
               />
             </div>

@@ -62,7 +62,7 @@ export default function ServicioDetalle({
               {servicio.resumen}
             </p>
             {servicio.entrega && (
-              <p className="relative mt-4 flex items-center gap-2 text-[12px] text-black/45">
+              <p className="relative mt-4 flex items-center gap-2 text-[12px] text-black/56">
                 <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
                 {servicio.entrega}
               </p>
@@ -95,7 +95,7 @@ export default function ServicioDetalle({
           </motion.p>
 
           <div className="mt-10">
-            <p className="text-[11px] tracking-[0.07em] uppercase text-black/45 mb-3">
+            <p className="text-[11px] tracking-[0.07em] uppercase text-black/56 mb-3">
               Qué incluye
             </p>
             <motion.div
@@ -121,7 +121,7 @@ export default function ServicioDetalle({
           </div>
 
           <div className="mt-10">
-            <p className="text-[11px] tracking-[0.07em] uppercase text-black/45 mb-3">
+            <p className="text-[11px] tracking-[0.07em] uppercase text-black/56 mb-3">
               Para quién es
             </p>
             <motion.div

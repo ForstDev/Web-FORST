@@ -160,7 +160,7 @@ function IsotipoDibujado() {
         initial={{ rotate: -10, scale: 0.9 }}
         animate={visible ? { rotate: [-10, 4, 0], scale: [0.9, 1.05, 1] } : {}}
         transition={{ duration: 5, ease: [0.16, 1, 0.3, 1], times: [0, 0.7, 1] }}
-        className="w-full max-w-[760px] h-auto opacity-[0.3] pointer-events-none"
+        className="w-full max-w-[900px] h-auto opacity-[0.3] pointer-events-none"
         aria-hidden
       >
         {petals.map((p, i) => (

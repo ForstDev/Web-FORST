@@ -275,18 +275,11 @@ export default function Hero() {
                     <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
                     Hablemos de tu negocio
                   </Link>
-                  {/* `py-1.5` para llegar al mínimo de área tocable; el
-                      subrayado sube a `bottom-0.5` para seguir pegado al
-                      texto en vez de quedar flotando bajo el padding. */}
                   <Link
                     href="/portafolio"
-                    className="group relative inline-block py-1.5 text-[13px] font-medium text-black/75 hover:text-[var(--forst-green)] transition-colors"
+                    className="group inline-flex items-center gap-3 rounded-full border border-[var(--forst-line)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] text-black/80 hover:text-[var(--forst-green)] hover:border-[var(--forst-green)] transition-colors"
                   >
                     Ver casos reales
-                    <span
-                      aria-hidden
-                      className="absolute bottom-0.5 left-0 h-px w-full bg-[var(--forst-green)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                    />
                   </Link>
                 </motion.div>
               </div>
@@ -303,8 +296,8 @@ export default function Hero() {
                 <div
                   className="relative"
                   style={{
-                    width: "clamp(280px, min(56vh, 84vw), 600px)",
-                    height: "clamp(280px, min(56vh, 84vw), 600px)",
+                    width: "clamp(280px, min(62vh, 90vw), 680px)",
+                    height: "clamp(280px, min(62vh, 90vw), 680px)",
                   }}
                 >
                   <MarcoIsla />

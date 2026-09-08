@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { servicios } from "@/data/servicios";
-import { portafolio } from "@/data/portafolio";
+import { casosVisibles } from "@/data/portafolio";
 
 const SITE_URL = "https://web-forst.vercel.app";
 
@@ -25,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const casos: MetadataRoute.Sitemap = portafolio.map((c) => ({
+  const casos: MetadataRoute.Sitemap = casosVisibles.map((c) => ({
     url: `${SITE_URL}/portafolio/${c.slug}`,
     changeFrequency: "monthly",
     priority: 0.7,

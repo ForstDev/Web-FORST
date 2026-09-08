@@ -27,6 +27,10 @@ export type Caso = {
   fondo: string;
   /** true si el fondo es oscuro y el texto debe ser claro (DFG: negro). */
   textoClaro?: boolean;
+  /** false = oculto de listados, links y sitemap, pero NO borrado — el
+   * caso sigue existiendo acá para cuando esté listo para publicarse.
+   * Ausente o true = visible (default). */
+  publicado?: boolean;
 };
 
 export const portafolio: Caso[] = [
@@ -61,6 +65,10 @@ export const portafolio: Caso[] = [
     acento: "#ee2624",
     fondo: "#000000",
     textoClaro: true,
+    // Fue el caso de referencia que usamos para construir la propia web
+    // de FORST, pero su rediseño real todavía no está listo para
+    // mostrarse como caso público. Oculto, no borrado.
+    publicado: false,
   },
   {
     slug: "velkai",
@@ -94,3 +102,9 @@ export const portafolio: Caso[] = [
     fondo: "#f4f2ef",
   },
 ];
+
+/** Lo que efectivamente se muestra en home, /portafolio, la página de
+ * cada caso y el sitemap — usar esto en vez de `portafolio` en cualquier
+ * vista pública. `portafolio` sigue completo para no perder los casos
+ * ocultos. */
+export const casosVisibles = portafolio.filter((c) => c.publicado !== false);

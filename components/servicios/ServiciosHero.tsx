@@ -16,7 +16,7 @@ export default function ServiciosHero() {
         variants={fadeUp}
         initial="hidden"
         animate="visible"
-        className="t-eyebrow flex items-center gap-3 text-black/50 mb-7"
+        className="t-eyebrow flex items-center gap-3 text-black/60 mb-7"
       >
         <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
         Servicios

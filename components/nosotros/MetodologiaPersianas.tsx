@@ -81,7 +81,7 @@ function Panel({
         <span className="hidden sm:block text-[12px] text-white/60 leading-relaxed line-clamp-3">
           {fase.texto.split(".")[0]}.
         </span>
-        <span className="mt-1 text-[10px] tracking-[0.08em] uppercase text-white/50 flex items-center gap-1.5">
+        <span className="mt-1 text-[10px] tracking-[0.08em] uppercase text-white/62 flex items-center gap-1.5">
           <span className="w-1 h-1 rounded-full bg-white/60" />
           Ver fase
         </span>
@@ -131,7 +131,7 @@ export default function MetodologiaPersianas() {
       </div>
 
       <div
-        className="grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{ gridTemplateRows: activa ? "1fr" : "0fr" }}
       >
         <div className="overflow-hidden">
@@ -142,10 +142,10 @@ export default function MetodologiaPersianas() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35, ease: EASE }}
+                transition={{ duration: 0.2, ease: EASE }}
                 className="mt-8 pt-8 border-t border-[var(--forst-line)]"
               >
-                <p className="flex items-center gap-2.5 text-[11px] tracking-[0.07em] uppercase text-black/40 mb-4">
+                <p className="flex items-center gap-2.5 text-[11px] tracking-[0.07em] uppercase text-black/55 mb-4">
                   <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
                   Fase {activaIndex + 1} de {metodologia.length}
                 </p>

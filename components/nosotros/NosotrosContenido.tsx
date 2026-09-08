@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "motion/react";
 import WordReveal from "@/components/animations/WordReveal";
 import RevealImage from "@/components/animations/RevealImage";
@@ -16,6 +17,18 @@ const VALORES = [
 ];
 
 export default function NosotrosContenido() {
+  const valoresRef = useRef<HTMLDivElement>(null);
+
+  // Posición del mouse relativa al bloque, escrita directo al DOM (no a
+  // estado de React) para no re-renderizar en cada pixel de movimiento —
+  // el halo la lee vía la variable CSS que alimenta su gradiente.
+  const moverHalo = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = valoresRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    valoresRef.current!.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+    valoresRef.current!.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+  };
+
   return (
     <>
       {/* Hero */}
@@ -24,7 +37,7 @@ export default function NosotrosContenido() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-7"
+          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
         >
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Nosotros
@@ -70,7 +83,7 @@ export default function NosotrosContenido() {
                 idea del negocio con más espacio para respirar. */}
             <div className="mt-4 grid sm:grid-cols-2 gap-6 pt-6 border-t border-[var(--forst-line)]">
               <div>
-                <span className="flex items-center gap-2 text-[11px] tracking-[0.07em] uppercase text-black/50 mb-2">
+                <span className="flex items-center gap-2 text-[11px] tracking-[0.07em] uppercase text-black/60 mb-2">
                   <span className="w-1.5 h-1.5 rotate-45 bg-[var(--forst-green)] inline-block" />
                   Empresas en marcha
                 </span>
@@ -80,7 +93,7 @@ export default function NosotrosContenido() {
                 </p>
               </div>
               <div>
-                <span className="flex items-center gap-2 text-[11px] tracking-[0.07em] uppercase text-black/50 mb-2">
+                <span className="flex items-center gap-2 text-[11px] tracking-[0.07em] uppercase text-black/60 mb-2">
                   <span className="w-1.5 h-1.5 rotate-45 bg-[var(--forst-tan)] inline-block" />
                   Negocios que arrancan
                 </span>
@@ -116,7 +129,7 @@ export default function NosotrosContenido() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
-            className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-7"
+            className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
           >
             <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
             Lo que nos mueve
@@ -246,17 +259,32 @@ export default function NosotrosContenido() {
 
         <div className="max-w-[104rem] mx-auto px-6 md:px-10 pb-14 md:pb-20">
           <motion.div
+            ref={valoresRef}
+            onMouseMove={moverHalo}
             variants={staggerChildren}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="mt-12 md:mt-16 border-t border-[var(--forst-line)]"
+            className="group/valores relative mt-12 md:mt-16 border-t border-[var(--forst-line)]"
+            style={{ ["--spot-x" as string]: "50%", ["--spot-y" as string]: "50%" }}
           >
+            {/* Halo que sigue al cursor dentro del bloque — se suma al
+                resaltado por fila, no lo reemplaza. Transparent en los
+                bordes para no competir con el color que ya gana cada
+                fila individual al pasar el mouse. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 opacity-0 group-hover/valores:opacity-100 transition-opacity duration-500"
+              style={{
+                background:
+                  "radial-gradient(420px circle at var(--spot-x) var(--spot-y), rgba(0,46,44,0.06), transparent 70%)",
+              }}
+            />
             {VALORES.map((v, i) => (
               <motion.div
                 key={v.nombre}
                 variants={fadeUp}
-                className="group grid grid-cols-1 md:grid-cols-12 items-center gap-2 md:gap-8 py-6 md:py-8 px-2 -mx-2 md:px-4 md:-mx-4 border-b border-[var(--forst-line)] hover:bg-[var(--forst-tint)] transition-colors"
+                className="group relative grid grid-cols-1 md:grid-cols-12 items-center gap-2 md:gap-8 py-6 md:py-8 px-2 -mx-2 md:px-4 md:-mx-4 border-b border-[var(--forst-line)] hover:bg-[var(--forst-tint)] transition-colors"
               >
                 <span className="md:col-span-1 font-display text-sm text-black/65 group-hover:text-[var(--forst-green)] transition-colors">
                   0{i + 1}
@@ -281,7 +309,7 @@ export default function NosotrosContenido() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
-            className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/50 mb-4"
+            className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-4"
           >
             <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
             Cómo trabajamos

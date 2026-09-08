@@ -17,6 +17,10 @@ export default function SmoothScrollProvider({
 }) {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
+  // true justo antes de que este efecto corra si la navegación fue un
+  // atrás/adelante del historial — así "irAlDestino" sabe si debe
+  // restaurar dónde estabas en vez de mandarte arriba de todo.
+  const esNavegacionHistorial = useRef(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -62,8 +66,36 @@ export default function SmoothScrollProvider({
     }
   }, []);
 
+  // Guarda en dónde estás parado en esta ruta, actualizado en cada
+  // scroll — no alcanza con guardarlo recién al salir: la limpieza de
+  // un efecto corre DESPUÉS de que la URL ya cambió (React confirma el
+  // render nuevo antes de limpiar el anterior), así que para ese
+  // momento `window.scrollY` ya es el de la página siguiente, no el de
+  // la que se está dejando.
+  useEffect(() => {
+    const onScroll = () => {
+      sessionStorage.setItem(`forst-scroll:${pathname}`, String(window.scrollY));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pathname]);
+
+  // popstate solo se dispara con atrás/adelante del navegador (o
+  // router.back()), nunca con un <Link> normal — es la única forma
+  // confiable de distinguir "volviste" de "navegaste hacia adelante".
+  useEffect(() => {
+    const marcar = () => {
+      esNavegacionHistorial.current = true;
+    };
+    window.addEventListener("popstate", marcar);
+    return () => window.removeEventListener("popstate", marcar);
+  }, []);
+
   useEffect(() => {
     const irAlDestino = () => {
+      const eraHistorial = esNavegacionHistorial.current;
+      esNavegacionHistorial.current = false;
+
       const hash = window.location.hash;
       let destino: Element | null = null;
 
@@ -78,8 +110,15 @@ export default function SmoothScrollProvider({
       }
 
       if (!destino) {
-        lenisRef.current?.scrollTo(0, { immediate: true });
-        window.scrollTo(0, 0);
+        // Atrás/adelante sin hash: restaura dónde te habías quedado en
+        // esta ruta, si lo guardamos antes. Cualquier otra navegación
+        // (un <Link> nuevo) sigue arrancando arriba de todo.
+        const guardado = eraHistorial
+          ? sessionStorage.getItem(`forst-scroll:${pathname}`)
+          : null;
+        const y = guardado ? parseFloat(guardado) : 0;
+        lenisRef.current?.scrollTo(y, { immediate: true });
+        window.scrollTo(0, y);
         return;
       }
 

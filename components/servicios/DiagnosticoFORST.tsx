@@ -120,7 +120,7 @@ export default function DiagnosticoFORST() {
                   />
                   <span
                     aria-hidden
-                    className="font-display font-light text-[clamp(2rem,3.2vw,2.75rem)] leading-none tracking-[-0.02em] text-white/30 transition-colors duration-300 group-hover:text-white/55"
+                    className="font-display font-light text-[clamp(2rem,3.2vw,2.75rem)] leading-none tracking-[-0.02em] text-white/45 transition-colors duration-300 group-hover:text-white/55"
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
