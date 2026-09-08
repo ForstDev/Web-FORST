@@ -11,7 +11,7 @@ const CSP = [
   "media-src 'self' https://ijmygnxkuutgbcdgkjqj.supabase.co",
   "font-src 'self' data:",
   "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
-  "frame-ancestors 'none'",
+  "frame-ancestors 'self' https://www.alvarodev.site https://alvarodev.site",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
@@ -42,7 +42,6 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "Content-Security-Policy", value: CSP },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
