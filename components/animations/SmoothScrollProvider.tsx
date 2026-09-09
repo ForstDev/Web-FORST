@@ -80,9 +80,13 @@ export default function SmoothScrollProvider({
     return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
 
-  // popstate solo se dispara con atrás/adelante del navegador (o
-  // router.back()), nunca con un <Link> normal — es la única forma
-  // confiable de distinguir "volviste" de "navegaste hacia adelante".
+  // popstate solo se dispara con atrás/adelante del navegador (botón
+  // físico del navegador), nunca con un <Link> normal. Es la señal para
+  // ese caso, pero llega de forma asíncrona — para el botón "Volver"
+  // propio (VolverBoton, que llama a router.back()) no alcanza a tiempo
+  // siempre, así que ese además deja escrita una marca explícita en
+  // sessionStorage justo antes de navegar (ver VolverBoton.tsx). Acá se
+  // acepta cualquiera de las dos señales como "esto es un regreso".
   useEffect(() => {
     const marcar = () => {
       esNavegacionHistorial.current = true;
@@ -93,7 +97,9 @@ export default function SmoothScrollProvider({
 
   useEffect(() => {
     const irAlDestino = () => {
-      const eraHistorial = esNavegacionHistorial.current;
+      const marcaExplicita = sessionStorage.getItem("forst-volver") === "1";
+      sessionStorage.removeItem("forst-volver");
+      const eraHistorial = esNavegacionHistorial.current || marcaExplicita;
       esNavegacionHistorial.current = false;
 
       const hash = window.location.hash;
