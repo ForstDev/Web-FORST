@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { configPortal, portalHabilitado } from "@/lib/portal/config";
+import { portalHabilitado } from "@/lib/portal/config";
 import { cerrarSesionCookie, crearSesion, verificarCredenciales } from "@/lib/portal/sesion";
 
 export type EstadoLogin = { error: string | null; email: string };
@@ -25,9 +25,6 @@ export async function iniciarSesion(_prev: EstadoLogin, form: FormData): Promise
   const clave = String(form.get("password") ?? "").slice(0, 200);
 
   if (!portalHabilitado()) return { error: "El portal no está disponible.", email };
-  if (!configPortal()) {
-    return { error: "El portal todavía no está configurado en este equipo.", email };
-  }
   if (!email || !clave) return { error: "Escribe tu correo y tu contraseña.", email };
 
   const ip = (await headers()).get("x-forwarded-for")?.split(",")[0].trim() || "local";

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Lexend_Giga } from "next/font/google";
-import localFont from "next/font/local";
+import { Montserrat, Lexend_Giga, Poppins } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/animations/SmoothScrollProvider";
 import Header from "@/components/layout/Header";
@@ -8,24 +7,23 @@ import Footer from "@/components/layout/Footer";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CustomCursor from "@/components/ui/CustomCursor";
 import CookieConsent from "@/components/analytics/CookieConsent";
+import { portalHabilitado } from "@/lib/portal/config";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 
-const poppins = localFont({
+/** Poppins: titulares y textos de display. Desde Google Fonts y no como
+ * .ttf local: next/font la descarga al compilar, la sirve desde el propio
+ * dominio en woff2 y solo con caracteres latinos (unos 8 KB por peso
+ * contra 155 KB de cada .ttf). Solo los pesos que el sitio usa. */
+const poppins = Poppins({
   variable: "--font-poppins",
-  src: [
-    { path: "./fonts/poppins/Poppins-Light.ttf", weight: "300", style: "normal" },
-    { path: "./fonts/poppins/Poppins-Regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/poppins/Poppins-Medium.ttf", weight: "500", style: "normal" },
-    { path: "./fonts/poppins/Poppins-SemiBold.ttf", weight: "600", style: "normal" },
-    { path: "./fonts/poppins/Poppins-Bold.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/poppins/Poppins-ExtraBold.ttf", weight: "800", style: "normal" },
-  ],
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
 });
 
 /** Solo para el nombre "FORST": es la tipografía real del isotipo, no la
@@ -65,7 +63,7 @@ export default function RootLayout({
       <body className="antialiased">
         <OrganizationJsonLd />
         <SmoothScrollProvider>
-          <Header />
+          <Header portal={portalHabilitado()} />
           <main>{children}</main>
           <Footer />
           <GrainOverlay />

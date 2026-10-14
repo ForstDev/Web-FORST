@@ -20,12 +20,15 @@ export default function CasePlate({
   index,
   hero = false,
   withLayoutId = true,
+  prioritaria = false,
 }: {
   caso: Caso;
   index: number;
   /** true cuando la placa es el hero del caso abierto — muestra la composición. */
   hero?: boolean;
   withLayoutId?: boolean;
+  /** true si la placa se ve apenas carga la página: su foto no espera. */
+  prioritaria?: boolean;
 }) {
   const textoEyebrow = caso.textoClaro
     ? { color: caso.acento }
@@ -84,6 +87,7 @@ export default function CasePlate({
         alt=""
         aria-hidden
         fill
+        priority={prioritaria}
         sizes="(max-width: 768px) 100vw, 33vw"
         className="object-cover opacity-25"
       />

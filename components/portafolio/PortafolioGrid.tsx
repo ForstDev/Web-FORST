@@ -15,7 +15,7 @@ import CaseContent from "./CaseContent";
 import PaginaMockup from "./PaginaMockup";
 import WordReveal from "@/components/animations/WordReveal";
 import Resaltado from "@/components/ui/Resaltado";
-import { fadeUp, EASE } from "@/lib/motion-variants";
+import { EASE } from "@/lib/motion-variants";
 
 /**
  * Persiana de casos: cada caso es una franja vertical angosta con el
@@ -249,15 +249,10 @@ export default function PortafolioGrid() {
   return (
     <>
       <section className="max-w-[104rem] mx-auto px-6 md:px-10 pt-28 md:pt-32 pb-24 md:pb-32">
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
-        >
+        <p className="aparecer flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7">
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Casos
-        </motion.p>
+        </p>
 
         <h1 className="font-display font-medium uppercase text-[clamp(2rem,5vw,4.2rem)] leading-[1.08] text-black text-pretty">
           <WordReveal text="Marcas que" />
@@ -266,16 +261,13 @@ export default function PortafolioGrid() {
           </span>
         </h1>
 
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: 0.8 }}
-          className="mt-6 max-w-xl text-black/60 text-[15px] md:text-base leading-relaxed"
+        <p
+          style={{ "--retraso": "0.8s" } as React.CSSProperties}
+          className="aparecer mt-6 max-w-xl text-black/60 text-[15px] md:text-base leading-relaxed"
         >
           Trabajamos de cerca con cada marca, del problema al resultado,{" "}
           <Resaltado>sin humo.</Resaltado>
-        </motion.p>
+        </p>
 
         {/* Persiana: desktop. Alto por aspect-ratio en vez de un px
             fijo — con un alto fijo, al unificar los márgenes del sitio
@@ -301,16 +293,16 @@ export default function PortafolioGrid() {
         {/* Apiladas: mobile */}
         <div className="md:hidden mt-16 flex flex-col gap-5">
           {casosVisibles.map((caso, i) => (
-            <motion.button
+            // Entrada en CSS: en el teléfono esta tarjeta es lo primero que
+            // se ve y no debe esperar al JavaScript para aparecer.
+            <button
               key={caso.slug}
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: EASE, delay: 0.15 + i * 0.1 }}
+              style={{ "--retraso": `${0.15 + i * 0.1}s` } as React.CSSProperties}
               onClick={() => abrir(caso)}
-              className="text-left aspect-[4/3] cursor-pointer"
+              className="aparecer text-left aspect-[4/3] cursor-pointer"
             >
-              <CasePlate caso={caso} index={i} />
-            </motion.button>
+              <CasePlate caso={caso} index={i} prioritaria={i === 0} />
+            </button>
           ))}
           <Link
             href="/contacto"

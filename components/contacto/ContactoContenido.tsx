@@ -119,15 +119,10 @@ export default function ContactoContenido() {
   return (
     <>
       <section className="max-w-[104rem] mx-auto px-6 md:px-10 pt-28 md:pt-32 pb-16 md:pb-20">
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7"
-        >
+        <p className="aparecer flex items-center gap-3 text-[11px] md:text-xs tracking-[0.07em] uppercase text-black/60 mb-7">
           <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
           Contacto
-        </motion.p>
+        </p>
 
         <h1 className="font-display font-medium uppercase text-[clamp(2rem,5vw,4.2rem)] leading-[1.08] text-black max-w-4xl text-pretty">
           <WordReveal text="Cuéntanos qué" />
@@ -138,12 +133,11 @@ export default function ContactoContenido() {
 
         <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
           {/* Canal directo */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.7 }}
-            className="md:col-span-5"
+          {/* Entrada en CSS: es lo más grande de la primera pantalla y no
+              debe esperar al JavaScript para verse. */}
+          <div
+            style={{ "--retraso": "0.7s" } as React.CSSProperties}
+            className="aparecer md:col-span-5"
           >
             <a
               href="https://wa.me/51962316856?text=Hola%20FORST%2C%20quiero%20conversar%20sobre%20mi%20negocio."
@@ -188,7 +182,7 @@ export default function ContactoContenido() {
               </a>
               <span className="py-1.5">Lima, Perú. Atendemos a todo el país.</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Formulario */}
           <motion.form

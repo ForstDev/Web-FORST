@@ -17,8 +17,9 @@ import WordReveal from "@/components/animations/WordReveal";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import Resaltado from "@/components/ui/Resaltado";
 import MobileMenu from "@/components/layout/MobileMenu";
+import BotonSignIn from "@/components/layout/BotonSignIn";
 import { categorias } from "@/data/categorias";
-import { fadeUp, EASE } from "@/lib/motion-variants";
+import { EASE } from "@/lib/motion-variants";
 
 /**
  * Hero en formato cartel ("brutalist billboard"): el nombre FORST ocupa
@@ -41,13 +42,13 @@ const NAV_PRINCIPAL = [
  * desaparece, Framer anima cada pieza desde acá hasta allá (o al revés),
  * como si fuera un solo header transformándose, no dos cruzando en
  * opacidad. En mobile se reduce a logo + hamburguesa. */
-function HeaderEnMarco() {
+function HeaderEnMarco({ portal }: { portal: boolean }) {
   const [open, setOpen] = useState(false);
 
   return (
     <div
       id="header-en-marco"
-      className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] mb-8 md:mb-10"
+      className="flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] mb-8 md:mb-10"
     >
       <motion.div layoutId="site-logo" className="lg:justify-self-start">
         <Link href="/" className="flex items-center gap-2.5">
@@ -76,6 +77,7 @@ function HeaderEnMarco() {
       </motion.nav>
 
       <div className="hidden lg:flex items-center gap-3 justify-self-end">
+        {portal && <BotonSignIn layoutId="site-signin" />}
         <motion.nav
           layoutId="site-contacto-pill"
           className="rounded-full border border-[var(--forst-line)] p-1"
@@ -98,14 +100,17 @@ function HeaderEnMarco() {
         </motion.a>
       </div>
 
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="Abrir menú"
-        className="lg:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
-      >
-        <span className="block w-6 h-[2px] bg-black" />
-        <span className="block w-4 h-[2px] bg-black" />
-      </button>
+      <div className="lg:hidden flex items-center gap-2">
+        {portal && <BotonSignIn />}
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menú"
+          className="flex flex-col justify-center items-end gap-1.5 w-10 h-10"
+        >
+          <span className="block w-6 h-[2px] bg-black" />
+          <span className="block w-4 h-[2px] bg-black" />
+        </button>
+      </div>
 
       <MobileMenu open={open} onClose={() => setOpen(false)} />
     </div>
@@ -181,11 +186,12 @@ function Letra({
   return (
     <motion.span
       ref={ref}
-      initial={reducido ? false : { y: "35%", opacity: 0 }}
-      animate={{ y: "0%", opacity: 1 }}
-      transition={{ duration: 0.9, ease: EASE, delay: 0.15 + indice * 0.08 }}
-      className="inline-block text-center"
-      style={{ width: `${ancho}em`, fontVariationSettings: variacion }}
+      className="aparecer-letra inline-block text-center"
+      style={{
+        width: `${ancho}em`,
+        fontVariationSettings: variacion,
+        ["--retraso" as string]: `${0.15 + indice * 0.08}s`,
+      }}
     >
       {ch}
     </motion.span>
@@ -239,11 +245,9 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
           del cartel; en pantallas chicas baja al flujo y solo pisa el
           borde inferior de las letras. `pointer-events-none` para que la
           lupa siga respondiendo aunque el cursor pase por encima. */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: EASE, delay: 0.55 }}
-        className="pointer-events-none relative z-10 mx-auto -mt-[5%] w-[64%] sm:w-[46%] lg:absolute lg:left-1/2 lg:top-[30%] lg:mt-0 lg:w-[20%] lg:-translate-x-1/2"
+      <div
+        style={{ "--retraso": "0.55s" } as React.CSSProperties}
+        className="aparecer pointer-events-none relative z-10 mx-auto -mt-[5%] w-[64%] sm:w-[46%] lg:absolute lg:left-1/2 lg:top-[30%] lg:mt-0 lg:w-[20%] lg:-translate-x-1/2"
       >
         <motion.div
           animate={reducido ? undefined : { y: [0, -12, 0] }}
@@ -259,12 +263,12 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
             className="w-full h-auto drop-shadow-[0_34px_40px_rgba(0,46,44,0.25)]"
           />
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
 
-export default function Hero() {
+export default function Hero({ portal = false }: { portal?: boolean }) {
   // Posición del cursor en la ventana. -1 significa "fuera del Hero":
   // las letras vuelven al peso de reposo. Solo cuenta el mouse; en
   // pantallas táctiles el cartel queda quieto después de la entrada.
@@ -289,21 +293,16 @@ export default function Hero() {
           incluido, vive dentro de una ventana con borde propio. Mismo
           margen que el header real para que los bordes queden alineados. */}
       <div className="max-w-[104rem] mx-auto w-full rounded-[2rem] md:rounded-[2.5rem] border border-[var(--forst-line)] p-6 md:p-10 xl:p-14 flex flex-col">
-        <HeaderEnMarco />
+        <HeaderEnMarco portal={portal} />
 
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-black/55"
-        >
+        <div className="aparecer flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-black/55">
           <span className="flex items-center gap-3">
             <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
             Plataforma empresarial
           </span>
           <span className="hidden md:inline">Soluciones digitales a la medida</span>
           <span className="hidden sm:inline">Lima, Perú</span>
-        </motion.div>
+        </div>
 
         <div className="flex-1 flex flex-col justify-center py-8 lg:py-6">
           <Cartel mx={mx} my={my} />
@@ -320,24 +319,18 @@ export default function Hero() {
               </span>
             </h1>
 
-            <motion.p
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.85 }}
-              className="mt-5 measure-tight text-[15px] leading-relaxed text-black/60"
+            <p
+              style={{ "--retraso": "0.85s" } as React.CSSProperties}
+              className="aparecer mt-5 measure-tight text-[15px] leading-relaxed text-black/60"
             >
               Una plataforma empresarial{" "}
               <Resaltado delay={1.3}>hecha a la medida</Resaltado> de tu
               negocio, con la cara de tu marca y no la de una plantilla.
-            </motion.p>
+            </p>
 
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 1 }}
-              className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
+            <div
+              style={{ "--retraso": "1s" } as React.CSSProperties}
+              className="aparecer mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
             >
               {/* `max-w-full` + `shrink-0` en el punto: en pantallas muy
                   angostas el texto del botón envuelve en vez de desbordar. */}
@@ -354,18 +347,15 @@ export default function Hero() {
               >
                 Ver casos reales
               </Link>
-            </motion.div>
+            </div>
           </div>
 
           {/* Las cinco áreas, como índice del cartel. Cada una lleva a su
               sección en /servicios. */}
-          <motion.nav
+          <nav
             aria-label="Áreas de servicio"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 1.1 }}
-            className="min-w-0 lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10"
+            style={{ "--retraso": "1.1s" } as React.CSSProperties}
+            className="aparecer min-w-0 lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10"
           >
             <p className="t-eyebrow text-black/50">Qué hacemos</p>
             <ol className="mt-3 border-t border-[var(--forst-line)]">
@@ -385,7 +375,7 @@ export default function Hero() {
                 </li>
               ))}
             </ol>
-          </motion.nav>
+          </nav>
         </div>
       </div>
     </section>

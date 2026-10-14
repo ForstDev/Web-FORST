@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import MobileMenu from "@/components/layout/MobileMenu";
+import BotonSignIn from "@/components/layout/BotonSignIn";
 import { EASE } from "@/lib/motion-variants";
 
 /**
@@ -46,7 +47,9 @@ function irArriba(pathname: string, href: string, e: React.MouseEvent) {
   }
 }
 
-export default function Header() {
+/** `portal`: si el portal de clientes está activo (lo decide el servidor
+ * según sus variables de entorno). Sin portal no hay botón Sign in. */
+export default function Header({ portal = false }: { portal?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -119,7 +122,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: EASE }}
-            className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
+            className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
               scrolled
                 ? "py-3 bg-white border-b border-[var(--forst-line)]"
                 : "py-4 bg-transparent border-b border-transparent"
@@ -171,6 +174,7 @@ export default function Header() {
             </motion.nav>
 
             <div className="hidden lg:flex items-center gap-3 lg:justify-self-end">
+              {portal && <BotonSignIn layoutId="site-signin" fondo={pillBase} />}
               <motion.nav
                 layoutId="site-contacto-pill"
                 className={`flex items-center rounded-full p-1 transition-colors duration-500 ${pillBase}`}
@@ -205,14 +209,17 @@ export default function Header() {
               </motion.a>
             </div>
 
-            <button
-              onClick={() => setOpen(true)}
-              aria-label="Abrir menú"
-              className="lg:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
-            >
-              <span className="block w-6 h-[2px] bg-black" />
-              <span className="block w-4 h-[2px] bg-black" />
-            </button>
+            <div className="lg:hidden flex items-center gap-2">
+              {portal && <BotonSignIn fondo={pillBase} />}
+              <button
+                onClick={() => setOpen(true)}
+                aria-label="Abrir menú"
+                className="flex flex-col justify-center items-end gap-1.5 w-10 h-10"
+              >
+                <span className="block w-6 h-[2px] bg-black" />
+                <span className="block w-4 h-[2px] bg-black" />
+              </button>
+            </div>
           </motion.header>
         )}
       </AnimatePresence>

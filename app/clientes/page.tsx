@@ -1,66 +1,66 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import FormularioLogin from "@/components/portal/FormularioLogin";
 import { leerSesion } from "@/lib/portal/sesion";
-import { configPortal } from "@/lib/portal/config";
 
 export default async function LoginClientesPage() {
   if (await leerSesion()) redirect("/clientes/panel");
-  const configurado = configPortal() !== null;
 
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden bg-[var(--forst-green)] text-[var(--forst-white)] flex items-center justify-center px-6 py-24">
-      {/* Fondo: manchas de luz de la paleta y la isla al costado. El
-          vidrio necesita algo con color detrás para que se note. */}
-      <div aria-hidden className="absolute inset-0 -z-10">
-        <div className="absolute -top-40 -right-32 h-[34rem] w-[34rem] rounded-full bg-[var(--forst-tan)] opacity-35 blur-[120px]" />
-        <div className="absolute -bottom-48 -left-40 h-[38rem] w-[38rem] rounded-full bg-[#2f7a6f] opacity-45 blur-[130px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(247,246,242,0.08),transparent_60%)]" />
-        <div className="absolute right-[-6%] top-1/2 hidden w-[44%] max-w-[640px] -translate-y-1/2 opacity-90 md:block">
-          <Image
-            src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/hero-isla.webp"
-            alt=""
-            width={1122}
-            height={1284}
-            priority
-            sizes="44vw"
-            className="w-full h-auto drop-shadow-[0_40px_60px_rgba(0,0,0,0.35)]"
-          />
-        </div>
+    <section className="relative isolate min-h-[100svh] overflow-hidden flex items-center justify-center px-4 py-20">
+      {/* Fondo: un fotograma del video del Hero anterior, a calidad
+          completa. El video original pesa 24 MB y su movimiento casi no
+          se nota detrás de la tarjeta; la foto, con un acercamiento muy
+          lento, da la misma sensación y carga al instante. */}
+      <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden bg-[var(--forst-green)]">
+        <Image
+          src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/fotograma_login.jpg"
+          alt=""
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-[65%_center] login-acercamiento"
+        />
+        {/* Velo verde en los bordes: la tarjeta queda al centro sin
+            competir con el cielo ni con el follaje más brillante. */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,46,44,0.12)_0%,rgba(0,46,44,0.38)_70%,rgba(0,46,44,0.6)_100%)]" />
       </div>
 
-      <Link href="/" className="absolute left-6 top-6 md:left-10 md:top-8 flex items-center gap-2.5">
-        <AnimatedLogo size={32} color="var(--forst-white)" bg="var(--forst-green)" animateOnMount={false} />
-        <span className="font-logo text-base tracking-[0.04em]">FORST</span>
+      <Link
+        href="/"
+        className="absolute left-4 top-4 md:left-8 md:top-6 inline-flex items-center gap-2 rounded-full bg-[rgba(0,46,44,0.45)] px-4 py-2 text-[13px] text-white backdrop-blur-sm hover:bg-[rgba(0,46,44,0.65)] transition-colors"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+        Volver al sitio
       </Link>
 
-      <div className="vidrio w-full max-w-[26rem] rounded-[1.75rem] p-8 md:p-10 md:-translate-x-[18%]">
-        <p className="t-eyebrow text-white/70">Portal de clientes</p>
-        <h1 className="mt-4 font-display text-[1.75rem] leading-tight font-medium">
-          Ingresa a tu cuenta
-        </h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-white/75">
-          Revisa tus pagos, tu plan y tus comprobantes.
-        </p>
+      <div className="w-full max-w-[25rem] rounded-[1.75rem] bg-[var(--forst-white)] px-7 py-9 md:px-10 md:py-11 shadow-[0_30px_80px_rgba(0,30,28,0.35)]">
+        <div className="flex flex-col items-center text-center">
+          <AnimatedLogo size={52} />
+          <span className="mt-3 font-logo text-lg tracking-[0.06em] text-[var(--forst-green)]">FORST</span>
 
-        {configurado ? (
-          <FormularioLogin />
-        ) : (
-          <p role="alert" className="mt-8 rounded-xl border border-white/25 bg-white/10 p-4 text-[14px] leading-relaxed">
-            El portal todavía no está configurado en este equipo. Revisa las
-            variables PORTAL_ del archivo .env.local.
+          <p className="mt-7 t-eyebrow text-black/50">Portal de clientes</p>
+          <h1 className="mt-3 font-display text-[1.6rem] leading-tight font-medium text-black">
+            Ingresa a tu cuenta
+          </h1>
+          <p className="mt-2 text-[14px] leading-relaxed text-black/60">
+            Revisa tus pagos, tu plan y tus comprobantes.
           </p>
-        )}
+        </div>
 
-        <p className="mt-8 border-t border-white/15 pt-5 text-[12px] leading-relaxed text-white/65">
+        <FormularioLogin />
+
+        <p className="mt-8 border-t border-[var(--forst-line)] pt-5 text-center text-[12px] leading-relaxed text-black/55">
           Prototipo con datos de ejemplo. Si eres cliente y no tienes acceso,{" "}
           <a
             href="https://wa.me/51962316856?text=Hola%20FORST%2C%20necesito%20acceso%20al%20portal%20de%20clientes."
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-4 text-white hover:text-[var(--forst-tan)]"
+            className="underline underline-offset-4 text-[var(--forst-green)] hover:text-black"
           >
             escríbenos por WhatsApp
           </a>
