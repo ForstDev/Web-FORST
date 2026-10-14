@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
+import { ArrowUpRight } from "lucide-react";
 import WordReveal from "@/components/animations/WordReveal";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
-import EtiquetaVertical from "@/components/ui/EtiquetaVertical";
 import Resaltado from "@/components/ui/Resaltado";
 import MobileMenu from "@/components/layout/MobileMenu";
+import { categorias } from "@/data/categorias";
 import { fadeUp, EASE } from "@/lib/motion-variants";
 
 /**
- * El sujeto del Hero es la isla de musgo, sola, dentro del plano técnico
- * de la marca (grilla, escuadras, anillos, coordenadas de Lima).
+ * Hero en formato cartel ("brutalist billboard"): el nombre FORST ocupa
+ * todo el ancho del marco, verde sobre marfil, en la tipografía real del
+ * logo. La isla de musgo flota delante. Cada letra cambia de grosor según
+ * la cercanía del cursor, como una lupa hecha con la tipografía.
  */
 
 const NAV_PRINCIPAL = [
@@ -36,9 +47,9 @@ function HeaderEnMarco() {
   return (
     <div
       id="header-en-marco"
-      className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] mb-10 md:mb-14 lg:mb-16"
+      className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] mb-8 md:mb-10"
     >
-      <motion.div layoutId="site-logo" className="md:justify-self-start">
+      <motion.div layoutId="site-logo" className="lg:justify-self-start">
         <Link href="/" className="flex items-center gap-2.5">
           <AnimatedLogo size={36} animateOnMount={false} />
           <span className="font-logo text-lg tracking-[0.04em] text-black">
@@ -49,14 +60,14 @@ function HeaderEnMarco() {
 
       <motion.nav
         layoutId="site-nav-pill"
-        className="hidden md:flex items-center rounded-full p-1 border border-[var(--forst-line)] justify-self-center"
+        className="hidden lg:flex items-center rounded-full p-1 border border-[var(--forst-line)] justify-self-center"
       >
         {NAV_PRINCIPAL.map((l, i) => (
           <span key={l.href} className="flex items-center">
             {i > 0 && <span className="w-px h-4 bg-black/10" />}
             <Link
               href={l.href}
-              className="px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
+              className="px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
             >
               {l.label}
             </Link>
@@ -64,14 +75,14 @@ function HeaderEnMarco() {
         ))}
       </motion.nav>
 
-      <div className="hidden md:flex items-center gap-3 justify-self-end">
+      <div className="hidden lg:flex items-center gap-3 justify-self-end">
         <motion.nav
           layoutId="site-contacto-pill"
           className="rounded-full border border-[var(--forst-line)] p-1"
         >
           <Link
             href="/contacto"
-            className="block px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
+            className="block px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
           >
             Contacto
           </Link>
@@ -90,7 +101,7 @@ function HeaderEnMarco() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Abrir menú"
-        className="md:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
+        className="lg:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
       >
         <span className="block w-6 h-[2px] bg-black" />
         <span className="block w-4 h-[2px] bg-black" />
@@ -101,97 +112,142 @@ function HeaderEnMarco() {
   );
 }
 
-function MarcoIsla() {
-  const trazo = { duration: 1.3, ease: EASE };
-  const lineas = [50, 100, 150, 200, 250, 300, 350];
-  const esquinas = [
-    { x: 34, y: 34, dx: 1, dy: 1 },
-    { x: 366, y: 34, dx: -1, dy: 1 },
-    { x: 366, y: 366, dx: -1, dy: -1 },
-    { x: 34, y: 366, dx: 1, dy: -1 },
-  ];
+/** Ancho de cada letra de Lexend Giga en su peso más grueso (900), en
+ * em. Cada letra vive en una caja de ese ancho: cuando el cursor cambia
+ * los grosores, las letras engordan o adelgazan dentro de su caja y el
+ * cartel no se mueve de lado. La suma (4.375em) fija el tamaño de letra
+ * para que FORST ocupe todo el ancho del marco. */
+const LETRAS = [
+  { ch: "F", ancho: 0.795 },
+  { ch: "O", ancho: 1.013 },
+  { ch: "R", ancho: 0.884 },
+  { ch: "S", ancho: 0.818 },
+  { ch: "T", ancho: 0.865 },
+];
+const ANCHO_TOTAL = LETRAS.reduce((s, l) => s + l.ancho, 0);
+
+const PESO_REPOSO = 600;
+const PESO_MIN = 220;
+const PESO_MAX = 900;
+
+function Letra({
+  ch,
+  ancho,
+  indice,
+  mx,
+  my,
+  reducido,
+}: {
+  ch: string;
+  ancho: number;
+  indice: number;
+  mx: MotionValue<number>;
+  my: MotionValue<number>;
+  reducido: boolean;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  // Arranca finísima y "se infla" hasta el peso de reposo, una letra
+  // detrás de otra. Con movimiento reducido queda fija en el reposo.
+  const peso = useSpring(reducido ? PESO_REPOSO : 100, {
+    stiffness: 120,
+    damping: 20,
+    mass: 0.7,
+  });
+  const variacion = useTransform(peso, (w) => `"wght" ${Math.round(w)}`);
+
+  useEffect(() => {
+    if (reducido) return;
+    const t = setTimeout(() => peso.set(PESO_REPOSO), 350 + indice * 110);
+    return () => clearTimeout(t);
+  }, [peso, indice, reducido]);
+
+  // Lupa tipográfica: el grosor de cada letra depende de qué tan cerca
+  // está el cursor de su centro. La más cercana llega a 900, las lejanas
+  // bajan a 220, y fuera del Hero todas vuelven al reposo.
+  const recalcular = () => {
+    if (reducido || !ref.current) return;
+    const x = mx.get();
+    const y = my.get();
+    if (x < 0) return peso.set(PESO_REPOSO);
+    const r = ref.current.getBoundingClientRect();
+    const radio = Math.max(r.width * 2.2, 260);
+    const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+    const cercania = Math.exp(-((d / radio) ** 2));
+    peso.set(PESO_MIN + (PESO_MAX - PESO_MIN) * cercania);
+  };
+  useMotionValueEvent(mx, "change", recalcular);
+  useMotionValueEvent(my, "change", recalcular);
 
   return (
-    <div className="relative w-full h-full">
-      {/* Plano técnico de fondo: grilla, escuadras y anillos, el mismo
-          lenguaje geométrico del isotipo, ahora como marco en vez de
-          como sujeto. */}
-      <svg
-        viewBox="0 0 400 400"
-        className="absolute inset-0 w-full h-full"
-        aria-hidden
-      >
-        <g stroke="var(--forst-green)" strokeWidth="1" opacity="0.07">
-          {lineas.map((v) => (
-            <line key={`h${v}`} x1="0" y1={v} x2="400" y2={v} />
-          ))}
-          {lineas.map((v) => (
-            <line key={`v${v}`} x1={v} y1="0" x2={v} y2="400" />
-          ))}
-        </g>
+    <motion.span
+      ref={ref}
+      initial={reducido ? false : { y: "35%", opacity: 0 }}
+      animate={{ y: "0%", opacity: 1 }}
+      transition={{ duration: 0.9, ease: EASE, delay: 0.15 + indice * 0.08 }}
+      className="inline-block text-center"
+      style={{ width: `${ancho}em`, fontVariationSettings: variacion }}
+    >
+      {ch}
+    </motion.span>
+  );
+}
 
-        {esquinas.map((c, i) => (
-          <motion.path
-            key={i}
-            d={`M ${c.x} ${c.y + 26 * c.dy} L ${c.x} ${c.y} L ${c.x + 26 * c.dx} ${c.y}`}
-            fill="none"
-            stroke="var(--forst-green)"
-            strokeWidth="1.4"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.6 }}
-            transition={{ ...trazo, delay: 0.1 + i * 0.08 }}
-          />
-        ))}
+/** Escuadra de esquina del plano técnico de la marca. */
+function Escuadra({ className }: { className: string }) {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden className={`absolute w-4 h-4 md:w-5 md:h-5 ${className}`}>
+      <path d="M1 12 V1 H12" fill="none" stroke="var(--forst-green)" strokeWidth="1.4" opacity="0.55" />
+    </svg>
+  );
+}
 
-        {[126, 156].map((r, i) => (
-          <motion.circle
-            key={r}
-            cx="200"
-            cy="200"
-            r={r}
-            fill="none"
-            stroke="var(--forst-green)"
-            strokeWidth="1"
-            opacity="0.14"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ ...trazo, delay: 0.35 + i * 0.15 }}
-          />
-        ))}
+/**
+ * El cartel: FORST a todo el ancho del marco, en la tipografía real del
+ * logo, verde sobre marfil, y la isla de musgo flotando delante. El
+ * nombre es decorativo para lectores de pantalla (el h1 real va debajo).
+ */
+function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }) {
+  const reducido = useReducedMotion() ?? false;
 
-        {/* Único acento canela: una mota que orbita muy lento, como el
-            indicador de un instrumento que sigue vivo. */}
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, rotate: 360 }}
-          transition={{
-            opacity: { duration: 0.6, delay: 1.5 },
-            rotate: { duration: 28, repeat: Infinity, ease: "linear", delay: 1.5 },
-          }}
-          style={{ transformOrigin: "200px 200px" }}
+  return (
+    <div className="relative">
+      <div className="relative [container-type:inline-size]">
+        <Escuadra className="-left-2 -top-3 md:-left-4 md:-top-5" />
+        <Escuadra className="-right-2 -top-3 md:-right-4 md:-top-5 rotate-90" />
+        <p
+          aria-hidden
+          className="font-logo text-[var(--forst-green)] whitespace-nowrap select-none leading-[0.8] pt-[0.04em]"
+          style={{ fontSize: `calc(100cqw / ${ANCHO_TOTAL})` }}
         >
-          <circle cx="200" cy="44" r="3.5" fill="var(--forst-tan)" />
-        </motion.g>
-      </svg>
-
-      {/* La isla: sujeto principal, flotando dentro del marco. */}
-      <motion.div
-        initial={{ opacity: 0, y: 26 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        {/* La flotación se mueve al contenedor: next/image no admite el
-            prop `animate` de Framer directo (no es un componente motion),
-            así que el bobbing pasa a envolverlo en vez de aplicarse a la
-            imagen — mismo efecto visual, la imagen queda optimizada. Es
-            la más pesada de "peso visual" del sitio y la primera en
-            cargar, así que lleva `priority` para que no espere su turno
-            en la cola de carga diferida. */}
+          {LETRAS.map((l, i) => (
+            <Letra key={l.ch} ch={l.ch} ancho={l.ancho} indice={i} mx={mx} my={my} reducido={reducido} />
+          ))}
+        </p>
+        {/* Línea base con la ubicación, como la cota de un plano. */}
         <motion.div
-          animate={{ y: [0, -12, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
-          className="w-[74%]"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1.1, ease: EASE, delay: 0.5 }}
+          className="mt-3 md:mt-4 flex items-center gap-3 origin-left"
+        >
+          <span className="h-px flex-1 bg-[var(--forst-green)]/25" />
+          <span className="hidden sm:inline t-eyebrow text-black/45 whitespace-nowrap">12°02′ S · 77°02′ O</span>
+        </motion.div>
+      </div>
+
+      {/* La isla, delante del nombre. En escritorio flota sobre el centro
+          del cartel; en pantallas chicas baja al flujo y solo pisa el
+          borde inferior de las letras. `pointer-events-none` para que la
+          lupa siga respondiendo aunque el cursor pase por encima. */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: EASE, delay: 0.55 }}
+        className="pointer-events-none relative z-10 mx-auto -mt-[5%] w-[64%] sm:w-[46%] lg:absolute lg:left-1/2 lg:top-[30%] lg:mt-0 lg:w-[20%] lg:-translate-x-1/2"
+      >
+        <motion.div
+          animate={reducido ? undefined : { y: [0, -12, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
         >
           <Image
             src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/hero-isla.webp"
@@ -199,8 +255,8 @@ function MarcoIsla() {
             width={1122}
             height={1284}
             priority
-            sizes="(max-width: 1024px) 74vw, 444px"
-            className="w-full h-auto drop-shadow-[0_30px_44px_rgba(0,46,44,0.22)]"
+            sizes="(max-width: 640px) 64vw, (max-width: 1024px) 46vw, 26vw"
+            className="w-full h-auto drop-shadow-[0_34px_40px_rgba(0,46,44,0.25)]"
           />
         </motion.div>
       </motion.div>
@@ -209,102 +265,127 @@ function MarcoIsla() {
 }
 
 export default function Hero() {
+  // Posición del cursor en la ventana. -1 significa "fuera del Hero":
+  // las letras vuelven al peso de reposo. Solo cuenta el mouse; en
+  // pantallas táctiles el cartel queda quieto después de la entrada.
+  const mx = useMotionValue(-1);
+  const my = useMotionValue(-1);
+
   return (
     <section
       id="hero-foto"
-      className="relative overflow-hidden min-h-[100svh] flex items-center pt-6 pb-14 md:pt-10 md:pb-16 px-6 md:px-10"
+      onPointerMove={(e) => {
+        if (e.pointerType !== "mouse") return;
+        mx.set(e.clientX);
+        my.set(e.clientY);
+      }}
+      onPointerLeave={() => {
+        mx.set(-1);
+        my.set(-1);
+      }}
+      className="relative overflow-hidden min-h-[100svh] flex pt-6 pb-10 md:pt-10 md:pb-12 px-6 md:px-10"
     >
-      {/* El marco tipo "web dentro de web": el hero completo, header
-          incluido, vive dentro de una ventana con borde propio, en vez
-          de flotar suelto sobre el hueso con el header fijo separado.
-          Mismo margen que el header real (px-6 md:px-10) para que los
-          bordes queden alineados. */}
-      <div className="max-w-[104rem] mx-auto w-full rounded-[2rem] md:rounded-[2.5rem] border border-[var(--forst-line)] p-6 md:p-10 lg:p-14">
+      {/* El marco tipo "web dentro de web": el Hero completo, header
+          incluido, vive dentro de una ventana con borde propio. Mismo
+          margen que el header real para que los bordes queden alineados. */}
+      <div className="max-w-[104rem] mx-auto w-full rounded-[2rem] md:rounded-[2.5rem] border border-[var(--forst-line)] p-6 md:p-10 xl:p-14 flex flex-col">
         <HeaderEnMarco />
-        <div className="flex gap-8 lg:gap-14">
-          <EtiquetaVertical className="pt-2">
-            Plataforma empresarial · Lima, Perú
-          </EtiquetaVertical>
 
-          <div className="min-w-0 flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-              {/* Texto: arriba-izquierda, nunca centrado. */}
-              {/* `min-w-0`: por defecto un item de grid no encoge por
-                  debajo del ancho de su palabra más larga, así que en
-                  pantallas muy angostas el titular ensanchaba la columna
-                  y se salía del marco. */}
-              <div className="min-w-0 lg:col-span-5">
-                <h1 className="text-[var(--forst-green)]">
-                  <span className="block t-air">
-                    <WordReveal text="Creamos soluciones para negocios" />
-                  </span>
-                  <span className="block t-air-caps t-air-caps-lg mt-5 text-black/70">
-                    <WordReveal text="listos para evolucionar" />
-                  </span>
-                </h1>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-black/55"
+        >
+          <span className="flex items-center gap-3">
+            <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
+            Plataforma empresarial
+          </span>
+          <span className="hidden md:inline">Soluciones digitales a la medida</span>
+          <span className="hidden sm:inline">Lima, Perú</span>
+        </motion.div>
 
-                <motion.p
-                  variants={fadeUp}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ delay: 0.85 }}
-                  className="mt-7 measure-tight text-[15px] leading-relaxed text-black/60"
-                >
-                  Una plataforma empresarial{" "}
-                  <Resaltado delay={1.3}>hecha a la medida</Resaltado> de tu
-                  negocio. La diseñamos desde cero, con la cara de tu marca y
-                  no la de una plantilla.
-                </motion.p>
+        <div className="flex-1 flex flex-col justify-center py-8 lg:py-6">
+          <Cartel mx={mx} my={my} />
+        </div>
 
-                <motion.div
-                  variants={fadeUp}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ delay: 1 }}
-                  className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4"
-                >
-                  {/* `max-w-full` + `shrink-0` en el punto: un inline-flex
-                      toma el ancho de su contenido y no encoge, así que en
-                      pantallas muy angostas el botón ensanchaba la columna
-                      entera. Con el tope, el texto envuelve en dos líneas
-                      en vez de desbordar; donde entra, no cambia nada. */}
-                  <Link
-                    href="/contacto"
-                    className="group inline-flex max-w-full items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
-                  >
-                    <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
-                    Hablemos de tu negocio
-                  </Link>
-                  <Link
-                    href="/portafolio"
-                    className="group inline-flex items-center gap-3 rounded-full border border-[var(--forst-line)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] text-black/80 hover:text-[var(--forst-green)] hover:border-[var(--forst-green)] transition-colors"
-                  >
-                    Ver casos reales
-                  </Link>
-                </motion.div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-end">
+          {/* `min-w-0`: un item de grid no encoge por debajo de su palabra
+              más larga, y en pantallas angostas desbordaba el marco. */}
+          <div className="min-w-0 lg:col-span-5 xl:col-span-4">
+            <h1 className="font-display text-[clamp(1.4rem,2.1vw,2rem)] leading-[1.18] text-[var(--forst-green)] text-balance">
+              <WordReveal text="Creamos soluciones para negocios" />
+              <span className="text-black/70">
+                <WordReveal text="listos para evolucionar." />
+              </span>
+            </h1>
 
-              {/* El sujeto: la isla, enmarcada en el plano técnico de la
-                  marca — la escena que ya funcionaba, ahora hablando el
-                  idioma visual del resto del sitio. */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, ease: EASE, delay: 0.2 }}
-                className="lg:col-span-7 relative flex items-center justify-center"
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.85 }}
+              className="mt-5 measure-tight text-[15px] leading-relaxed text-black/60"
+            >
+              Una plataforma empresarial{" "}
+              <Resaltado delay={1.3}>hecha a la medida</Resaltado> de tu
+              negocio, con la cara de tu marca y no la de una plantilla.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 1 }}
+              className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
+            >
+              {/* `max-w-full` + `shrink-0` en el punto: en pantallas muy
+                  angostas el texto del botón envuelve en vez de desbordar. */}
+              <Link
+                href="/contacto"
+                className="group inline-flex max-w-full items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
               >
-                <div
-                  className="relative"
-                  style={{
-                    width: "clamp(280px, min(62vh, 90vw), 680px)",
-                    height: "clamp(280px, min(62vh, 90vw), 680px)",
-                  }}
-                >
-                  <MarcoIsla />
-                </div>
-              </motion.div>
-            </div>
+                <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
+                Hablemos de tu negocio
+              </Link>
+              <Link
+                href="/portafolio"
+                className="text-[12px] font-medium uppercase tracking-[0.14em] text-black/70 underline underline-offset-[6px] decoration-[var(--forst-line)] hover:text-[var(--forst-green)] hover:decoration-[var(--forst-green)] transition-colors"
+              >
+                Ver casos reales
+              </Link>
+            </motion.div>
           </div>
+
+          {/* Las cinco áreas, como índice del cartel. Cada una lleva a su
+              sección en /servicios. */}
+          <motion.nav
+            aria-label="Áreas de servicio"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 1.1 }}
+            className="min-w-0 lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10"
+          >
+            <p className="t-eyebrow text-black/50">Qué hacemos</p>
+            <ol className="mt-3 border-t border-[var(--forst-line)]">
+              {categorias.map((c) => (
+                <li key={c.slug} className="border-b border-[var(--forst-line)]">
+                  <Link
+                    href={`/servicios#${c.slug}`}
+                    className="group flex items-baseline gap-3 py-2 text-[14px] text-black/70 hover:text-[var(--forst-green)] transition-colors"
+                  >
+                    <span className="tabular-nums text-[11px] text-[var(--forst-green)]/70">{c.numero}</span>
+                    {c.nombre}
+                    <ArrowUpRight
+                      aria-hidden
+                      className="ml-auto h-3.5 w-3.5 self-center opacity-0 -translate-x-1 transition-[opacity,transform] duration-300 group-hover:opacity-100 group-hover:translate-x-0"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </motion.nav>
         </div>
       </div>
     </section>

@@ -171,7 +171,7 @@ function IsotipoDibujado() {
             r={PETAL_R}
             fill="none"
             stroke="var(--forst-green)"
-            strokeWidth={1}
+            strokeWidth={1.6}
             initial={{ pathLength: 0 }}
             animate={visible ? { pathLength: 1 } : {}}
             transition={{ ...trazo, delay: i * 0.32 }}
@@ -181,7 +181,7 @@ function IsotipoDibujado() {
           d={CUSHION_PATH}
           fill="none"
           stroke="var(--forst-green)"
-          strokeWidth={1}
+          strokeWidth={1.6}
           initial={{ pathLength: 0 }}
           animate={visible ? { pathLength: 1 } : {}}
           transition={{ ...trazo, delay: 1.6 }}
@@ -190,7 +190,7 @@ function IsotipoDibujado() {
           d={DIAMOND_PATH}
           fill="none"
           stroke="var(--forst-green)"
-          strokeWidth={1}
+          strokeWidth={1.6}
           initial={{ pathLength: 0 }}
           animate={visible ? { pathLength: 1 } : {}}
           transition={{ ...trazo, delay: 2.8 }}

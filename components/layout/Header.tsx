@@ -56,6 +56,8 @@ export default function Header() {
   // sin el chrome del sitio encima — cada caso trae su propia
   // caracterización de fondo/colores, y el header rompía esa inmersión.
   const enCasoDetalle = /^\/portafolio\/[^/]+\/?$/.test(pathname);
+  // El portal de clientes trae su propia barra (cliente, cerrar sesión).
+  const enPortal = pathname.startsWith("/clientes");
   const enHome = pathname === "/";
 
   // El menú se cierra solo al tocar un link, pero si esa navegación
@@ -99,7 +101,7 @@ export default function Header() {
     ? "bg-black/[0.05]"
     : "bg-white/80 backdrop-blur-md border border-[var(--forst-line)]";
 
-  if (enCasoDetalle) return null;
+  if (enCasoDetalle || enPortal) return null;
 
   // En el resto del sitio este header vive montado siempre. En Inicio
   // solo se monta una vez pasado el umbral — mientras tanto es
@@ -117,13 +119,13 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: EASE }}
-            className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
+            className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
               scrolled
                 ? "py-3 bg-white border-b border-[var(--forst-line)]"
                 : "py-4 bg-transparent border-b border-transparent"
             }`}
           >
-            <motion.div layoutId="site-logo" className="md:justify-self-start">
+            <motion.div layoutId="site-logo" className="lg:justify-self-start">
               <Link
                 href="/"
                 onClick={(e) => irArriba(pathname, "/", e)}
@@ -139,7 +141,7 @@ export default function Header() {
             {/* Navegación principal, centrada entre el logo y el CTA. */}
             <motion.nav
               layoutId="site-nav-pill"
-              className={`hidden md:flex items-center rounded-full p-1 transition-colors duration-500 md:justify-self-center ${pillBase}`}
+              className={`hidden lg:flex items-center rounded-full p-1 transition-colors duration-500 lg:justify-self-center ${pillBase}`}
             >
               {grupoPrincipal.map((l, i) => {
                 const active = pathname.startsWith(l.href);
@@ -149,7 +151,7 @@ export default function Header() {
                     <Link
                       href={l.href}
                       onClick={(e) => irArriba(pathname, l.href, e)}
-                      className={`px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
+                      className={`px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
                         active
                           ? "text-[var(--forst-green)] font-medium"
                           : "text-black/65 hover:text-black hover:bg-black/[0.04]"
@@ -168,7 +170,7 @@ export default function Header() {
               })}
             </motion.nav>
 
-            <div className="hidden md:flex items-center gap-3 md:justify-self-end">
+            <div className="hidden lg:flex items-center gap-3 lg:justify-self-end">
               <motion.nav
                 layoutId="site-contacto-pill"
                 className={`flex items-center rounded-full p-1 transition-colors duration-500 ${pillBase}`}
@@ -176,7 +178,7 @@ export default function Header() {
                 <Link
                   href="/contacto"
                   onClick={(e) => irArriba(pathname, "/contacto", e)}
-                  className={`px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
+                  className={`px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
                     pathname.startsWith("/contacto")
                       ? "text-[var(--forst-green)] font-medium"
                       : "text-black/65 hover:text-black hover:bg-black/[0.04]"
@@ -206,7 +208,7 @@ export default function Header() {
             <button
               onClick={() => setOpen(true)}
               aria-label="Abrir menú"
-              className="md:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
+              className="lg:hidden flex flex-col justify-center items-end gap-1.5 w-10 h-10"
             >
               <span className="block w-6 h-[2px] bg-black" />
               <span className="block w-4 h-[2px] bg-black" />

@@ -17,6 +17,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/portafolio`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/nosotros`, changeFrequency: "yearly", priority: 0.6 },
     { url: `${SITE_URL}/contacto`, changeFrequency: "yearly", priority: 0.7 },
+    { url: `${SITE_URL}/libro-de-reclamaciones`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/terminos-y-condiciones`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/politica-de-privacidad`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/politica-de-cookies`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const anclasDeServicios: MetadataRoute.Sitemap = servicios.map((s) => ({

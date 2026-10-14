@@ -1,11 +1,14 @@
 import type { NextConfig } from "next";
 
-// Sitio sin backend propio: solo carga script externo de Google
-// Analytics (tras consentimiento) e imágenes de Supabase Storage. La
-// CSP se arma alrededor de esas dos únicas fuentes externas.
+// El navegador solo carga un script externo, Google Analytics (tras
+// consentimiento), e imágenes y videos de Supabase Storage. El libro de
+// reclamaciones habla con Supabase desde el servidor, así que no suma
+// nada aquí. React en desarrollo necesita eval para sus herramientas de
+// depuración; en producción no se permite.
+const DEV = process.env.NODE_ENV === "development";
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+  `script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://ijmygnxkuutgbcdgkjqj.supabase.co https://www.google-analytics.com https://www.googletagmanager.com",
   "media-src 'self' https://ijmygnxkuutgbcdgkjqj.supabase.co",

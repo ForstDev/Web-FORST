@@ -3,6 +3,12 @@
 # snapshots de desarrollo (utilidad /api/snap)
 /.snaps/
 
+# reclamos y sesiones de prueba guardados en local (solo desarrollo)
+/.data/
+
+# videos de lanzamiento generados con /brag (pesados, no son parte del sitio)
+/brag-output*/
+
 # dependencies
 /node_modules
 /.pnp
@@ -35,6 +41,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# la plantilla solo tiene nombres de variables, sin valores
+!.env.example
 
 # vercel
 .vercel

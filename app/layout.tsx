@@ -28,12 +28,13 @@ const montserrat = Montserrat({
   weight: ["300", "400", "500", "600"],
 });
 
-/** Solo para el nombre "FORST" del logo — es la tipografía real del
- * isotipo, no la del sitio (Poppins/Montserrat). */
+/** Solo para el nombre "FORST": es la tipografía real del isotipo, no la
+ * del sitio (Poppins/Montserrat). Se carga como fuente variable, sin
+ * fijar pesos, porque el cartel del Hero mueve el grosor de cada letra
+ * en continuo según dónde está el cursor. */
 const lexendGiga = Lexend_Giga({
   variable: "--font-lexend-giga",
   subsets: ["latin"],
-  weight: ["600", "700"],
 });
 
 const SITE_URL = "https://web-forst.vercel.app";

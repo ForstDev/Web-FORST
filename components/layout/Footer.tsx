@@ -1,5 +1,15 @@
 import Link from "next/link";
+import { BookOpenText } from "lucide-react";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
+import BotonConfigurarCookies from "@/components/analytics/BotonConfigurarCookies";
+import { empresa } from "@/data/empresa";
+import { portalHabilitado } from "@/lib/portal/config";
+
+const legales = [
+  { href: "/terminos-y-condiciones", label: "Términos y condiciones" },
+  { href: "/politica-de-privacidad", label: "Privacidad" },
+  { href: "/politica-de-cookies", label: "Cookies" },
+];
 
 const nav = [
   { href: "/", label: "Inicio" },
@@ -58,7 +68,7 @@ export default function Footer() {
                 Contacto
               </span>
               <a
-                href="https://wa.me/51962316856"
+                href={empresa.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-2 w-fit text-white/75 hover:text-[var(--forst-white)] transition-colors"
@@ -66,18 +76,60 @@ export default function Footer() {
                 WhatsApp
               </a>
               <a
-                href="mailto:forst.pe@outlook.com"
+                href={`mailto:${empresa.correo}`}
                 className="py-2 w-fit text-white/75 hover:text-[var(--forst-white)] transition-colors"
               >
-                forst.pe@outlook.com
+                {empresa.correo}
               </a>
               <span className="py-2 text-white/75">Lima, Perú</span>
+              {/* Solo aparece donde el portal está activo (en local, por
+                  ahora). En producción el enlace no existe. */}
+              {portalHabilitado() && (
+                <Link
+                  href="/clientes"
+                  className="py-2 w-fit text-white/75 hover:text-[var(--forst-white)] transition-colors"
+                >
+                  Acceso clientes
+                </Link>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="pt-8 text-xs text-white/55">
-          <p>© {new Date().getFullYear()} FORST. Plataforma empresarial.</p>
+        {/* Datos legales y enlaces. El Código del Consumidor pide razón
+            social y RUC visibles donde se ofrecen los servicios, y la Ley
+            32495 un acceso permanente al libro de reclamaciones. */}
+        <div className="pt-8 flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-xs text-white/55">
+          <div className="space-y-1.5 leading-relaxed">
+            <p>
+              © {new Date().getFullYear()} {empresa.razonSocial} · RUC {empresa.ruc}
+            </p>
+            <p>{empresa.domicilio}</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-1">
+            <nav aria-label="Legal" className="flex flex-wrap gap-x-5">
+              {legales.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="py-2 text-white/65 hover:text-[var(--forst-white)] transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ))}
+              <BotonConfigurarCookies className="py-2 text-white/65 hover:text-[var(--forst-white)] transition-colors">
+                Configurar cookies
+              </BotonConfigurarCookies>
+            </nav>
+            <Link
+              href="/libro-de-reclamaciones"
+              className="mt-3 sm:mt-0 inline-flex w-fit items-center gap-2.5 rounded-lg border border-white/25 px-4 py-2.5 text-white/85 hover:border-white/60 hover:text-[var(--forst-white)] transition-colors"
+            >
+              <BookOpenText className="w-4 h-4" aria-hidden />
+              Libro de reclamaciones
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

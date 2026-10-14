@@ -57,7 +57,7 @@ export default function MobileMenu({
           // para que deje de capturar eventos apenas empieza a cerrarse.
           exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.35 }}
-          className="fixed inset-0 z-[80] bg-[var(--forst-green)] text-white flex flex-col md:hidden"
+          className="fixed inset-0 z-[80] bg-[var(--forst-green)] text-white flex flex-col lg:hidden"
         >
           <div className="flex items-center justify-between px-5 py-4">
             <span className="flex items-center gap-2.5">

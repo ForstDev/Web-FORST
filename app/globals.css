@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* "lupa": pantallas con mouse y al menos 768px de ancho. Ahí los
+   servicios se agrandan al pasar el cursor; en táctil o en móvil se
+   muestran como lista con todo el texto visible. */
+@custom-variant lupa (@media (hover: hover) and (min-width: 48rem));
+
 :root {
   /* Paleta oficial del Manual de Marca FORST — 4 colores, ni uno más.
      Principales (Verde Forst, Plomo): fondos, textos y gráficos.
@@ -296,5 +301,132 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Cuerpo de los textos legales: listas con viñeta en rombo de marca y
+   enlaces subrayados, para que se lean como documento y no como UI. */
+.legal-cuerpo ul {
+  list-style: none;
+  padding-left: 0;
+}
+.legal-cuerpo ul > li {
+  position: relative;
+  padding-left: 1.4em;
+  margin-top: 0.5em;
+}
+.legal-cuerpo ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--forst-green);
+}
+.legal-cuerpo a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.legal-cuerpo a:hover {
+  color: var(--forst-green);
+}
+.legal-cuerpo strong {
+  font-weight: 600;
+  color: var(--forst-black);
+}
+.legal-cuerpo table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.legal-cuerpo th,
+.legal-cuerpo td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--forst-line);
+}
+.legal-cuerpo th {
+  font-weight: 600;
+  color: var(--forst-black);
+}
+
+/* En móvil las tablas de cuatro columnas no entran: cada fila pasa a ser
+   una ficha y cada celda muestra su encabezado al lado. */
+@media (max-width: 767px) {
+  .legal-cuerpo .tabla-fichas thead {
+    display: none;
+  }
+  .legal-cuerpo .tabla-fichas,
+  .legal-cuerpo .tabla-fichas tbody,
+  .legal-cuerpo .tabla-fichas tr,
+  .legal-cuerpo .tabla-fichas td {
+    display: block;
+  }
+  .legal-cuerpo .tabla-fichas tr {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--forst-line);
+  }
+  .legal-cuerpo .tabla-fichas td {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 12px;
+    padding: 3px 0;
+    border: 0;
+  }
+  .legal-cuerpo .tabla-fichas td::before {
+    content: attr(data-label);
+    color: rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Vidrio esmerilado del login de clientes. Si el navegador no soporta
+   backdrop-filter, o la persona pidió menos transparencias, la tarjeta
+   pasa a un verde sólido: el texto blanco mantiene su contraste igual. */
+.vidrio {
+  background: rgba(247, 246, 242, 0.1);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(247, 246, 242, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 30px 80px rgba(0, 0, 0, 0.28);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .vidrio {
+    background: rgba(0, 46, 44, 0.94);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .vidrio {
+    background: rgba(0, 46, 44, 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Hoja del libro de reclamaciones: al imprimir (o guardar en PDF) sale
+   solo la hoja, sin header, footer, aviso de cookies ni botones. */
+@media print {
+  @page {
+    margin: 16mm;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .hoja-imprimible,
+  .hoja-imprimible * {
+    visibility: visible;
+  }
+  .hoja-imprimible {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+  .no-imprimir {
+    display: none !important;
   }
 }
