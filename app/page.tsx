@@ -4,12 +4,11 @@ import ServiciosPreview from "@/components/sections/ServiciosPreview";
 import CasosDestacados from "@/components/sections/CasosDestacados";
 import Resultados from "@/components/sections/Resultados";
 import CTAFinal from "@/components/sections/CTAFinal";
-import { portalHabilitado } from "@/lib/portal/config";
 
 export default function Home() {
   return (
     <>
-      <Hero portal={portalHabilitado()} />
+      <Hero />
       <Manifiesto />
       <ServiciosPreview />
       <CasosDestacados />

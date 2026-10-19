@@ -1,127 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   motion,
   useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
+  useScroll,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import WordReveal from "@/components/animations/WordReveal";
-import AnimatedLogo from "@/components/animations/AnimatedLogo";
-import Resaltado from "@/components/ui/Resaltado";
-import MobileMenu from "@/components/layout/MobileMenu";
-import BotonSignIn from "@/components/layout/BotonSignIn";
 import { categorias } from "@/data/categorias";
-import { EASE } from "@/lib/motion-variants";
+import { progresoLogo } from "@/lib/logo-scroll";
 
 /**
  * Hero en formato cartel ("brutalist billboard"): el nombre FORST ocupa
- * todo el ancho del marco, verde sobre marfil, en la tipografía real del
- * logo. La isla de musgo flota delante. Cada letra cambia de grosor según
- * la cercanía del cursor, como una lupa hecha con la tipografía.
+ * todo el ancho, verde sobre marfil, en la tipografía real del logo.
+ *
+ * Al hacer scroll el nombre se encoge y viaja hasta el lugar del logo en
+ * el header. Ahí se funde con el logo real, que recién entonces aparece:
+ * mientras el cartel está a la vista, el header no repite el nombre. Al
+ * volver arriba el recorrido se deshace, porque va atado al scroll.
+ *
+ * Cada letra además cambia de grosor según la cercanía del cursor, como
+ * una lupa hecha con la tipografía.
  */
-
-const NAV_PRINCIPAL = [
-  { href: "/servicios", label: "Servicios" },
-  { href: "/portafolio", label: "Casos" },
-  { href: "/nosotros", label: "Nosotros" },
-];
-
-/** El header, adentro del marco: no es fijo, es la fila de arriba de la
- * misma tarjeta, y vive siempre montado (nunca se oculta) — el header
- * fijo de afuera (Header.tsx) solo existe mientras estás scrolleado más
- * allá de esta fila. Logo, nav, Contacto y el CTA comparten layoutId con
- * sus contrapartes del header fijo: cuando ese header fijo aparece o
- * desaparece, Framer anima cada pieza desde acá hasta allá (o al revés),
- * como si fuera un solo header transformándose, no dos cruzando en
- * opacidad. En mobile se reduce a logo + hamburguesa. */
-function HeaderEnMarco({ portal }: { portal: boolean }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div
-      id="header-en-marco"
-      className="flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] mb-8 md:mb-10"
-    >
-      <motion.div layoutId="site-logo" className="lg:justify-self-start">
-        <Link href="/" className="flex items-center gap-2.5">
-          <AnimatedLogo size={36} animateOnMount={false} />
-          <span className="font-logo text-lg tracking-[0.04em] text-black">
-            FORST
-          </span>
-        </Link>
-      </motion.div>
-
-      <motion.nav
-        layoutId="site-nav-pill"
-        className="hidden lg:flex items-center rounded-full p-1 border border-[var(--forst-line)] justify-self-center"
-      >
-        {NAV_PRINCIPAL.map((l, i) => (
-          <span key={l.href} className="flex items-center">
-            {i > 0 && <span className="w-px h-4 bg-black/10" />}
-            <Link
-              href={l.href}
-              className="px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
-            >
-              {l.label}
-            </Link>
-          </span>
-        ))}
-      </motion.nav>
-
-      <div className="hidden lg:flex items-center gap-3 justify-self-end">
-        {portal && <BotonSignIn layoutId="site-signin" />}
-        <motion.nav
-          layoutId="site-contacto-pill"
-          className="rounded-full border border-[var(--forst-line)] p-1"
-        >
-          <Link
-            href="/contacto"
-            className="block px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide text-black/65 hover:text-black hover:bg-black/[0.04] transition-colors"
-          >
-            Contacto
-          </Link>
-        </motion.nav>
-        <motion.a
-          layoutId="site-cta"
-          href="https://wa.me/51962316856?text=Hola%20FORST%2C%20quiero%20conversar%20sobre%20mi%20negocio."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block rounded-full text-[13px] font-medium uppercase tracking-wide px-5 py-3 bg-[var(--forst-green)] text-white hover:bg-[var(--forst-green-soft)] transition-colors"
-        >
-          Conversemos
-        </motion.a>
-      </div>
-
-      <div className="lg:hidden flex items-center gap-2">
-        {portal && <BotonSignIn />}
-        <button
-          onClick={() => setOpen(true)}
-          aria-label="Abrir menú"
-          className="flex flex-col justify-center items-end gap-1.5 w-10 h-10"
-        >
-          <span className="block w-6 h-[2px] bg-black" />
-          <span className="block w-4 h-[2px] bg-black" />
-        </button>
-      </div>
-
-      <MobileMenu open={open} onClose={() => setOpen(false)} />
-    </div>
-  );
-}
 
 /** Ancho de cada letra de Lexend Giga en su peso más grueso (900), en
  * em. Cada letra vive en una caja de ese ancho: cuando el cursor cambia
  * los grosores, las letras engordan o adelgazan dentro de su caja y el
  * cartel no se mueve de lado. La suma (4.375em) fija el tamaño de letra
- * para que FORST ocupe todo el ancho del marco. */
+ * para que FORST ocupe todo el ancho. */
 const LETRAS = [
   { ch: "F", ancho: 0.795 },
   { ch: "O", ancho: 1.013 },
@@ -134,6 +47,9 @@ const ANCHO_TOTAL = LETRAS.reduce((s, l) => s + l.ancho, 0);
 const PESO_REPOSO = 600;
 const PESO_MIN = 220;
 const PESO_MAX = 900;
+/** Peso del "FORST" del logo en el header: al llegar, el cartel ya tiene
+ * su mismo grosor y el relevo no se nota. */
+const PESO_LOGO = 400;
 
 function Letra({
   ch,
@@ -162,15 +78,20 @@ function Letra({
 
   useEffect(() => {
     if (reducido) return;
-    const t = setTimeout(() => peso.set(PESO_REPOSO), 350 + indice * 110);
+    const t = setTimeout(() => {
+      if (progresoLogo.get() < 0.01) peso.set(PESO_REPOSO);
+    }, 350 + indice * 110);
     return () => clearTimeout(t);
   }, [peso, indice, reducido]);
 
   // Lupa tipográfica: el grosor de cada letra depende de qué tan cerca
   // está el cursor de su centro. La más cercana llega a 900, las lejanas
-  // bajan a 220, y fuera del Hero todas vuelven al reposo.
+  // bajan a 220, y fuera del Hero todas vuelven al reposo. Mientras el
+  // nombre viaja al header, el grosor lo manda el scroll.
   const recalcular = () => {
     if (reducido || !ref.current) return;
+    const p = progresoLogo.get();
+    if (p > 0.01) return peso.jump(PESO_REPOSO + (PESO_LOGO - PESO_REPOSO) * p);
     const x = mx.get();
     const y = my.get();
     if (x < 0) return peso.set(PESO_REPOSO);
@@ -182,6 +103,7 @@ function Letra({
   };
   useMotionValueEvent(mx, "change", recalcular);
   useMotionValueEvent(my, "change", recalcular);
+  useMotionValueEvent(progresoLogo, "change", recalcular);
 
   return (
     <motion.span
@@ -207,68 +129,117 @@ function Escuadra({ className }: { className: string }) {
   );
 }
 
+/** Curva suave de entrada y salida para el recorrido atado al scroll. */
+const suave = (p: number) => p * p * (3 - 2 * p);
+
 /**
- * El cartel: FORST a todo el ancho del marco, en la tipografía real del
- * logo, verde sobre marfil, y la isla de musgo flotando delante. El
- * nombre es decorativo para lectores de pantalla (el h1 real va debajo).
+ * El cartel: FORST a todo el ancho, verde sobre marfil. El nombre es
+ * decorativo para lectores de pantalla (el h1 real va debajo).
  */
 function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }) {
   const reducido = useReducedMotion() ?? false;
+  const nombreRef = useRef<HTMLParagraphElement>(null);
+  // Caja del nombre sin transformar, en coordenadas del documento.
+  const base = useRef<{ L: number; T: number; W: number; H: number } | null>(null);
+  const { scrollY } = useScroll();
+  // Escuadras y cota se apagan apenas el nombre empieza a viajar.
+  const opDetalles = useTransform(progresoLogo, [0, 0.25], [1, 0]);
+
+  const actualizar = useCallback(
+    (s: number) => {
+      const el = nombreRef.current;
+      const b = base.current;
+      const destino = document.getElementById("logo-header-texto");
+      if (!el || !b) return;
+      if (reducido || !destino) {
+        // Sin viaje: el nombre se queda en el Hero y el logo del header
+        // se ve desde el principio.
+        el.style.transform = "";
+        el.style.opacity = "";
+        progresoLogo.set(reducido ? 1 : 0);
+        return;
+      }
+      const d = destino.getBoundingClientRect();
+      const kFinal = d.width / b.W;
+      // Borde superior que deja al nombre, ya en tamaño de logo, centrado
+      // en la altura del logo del header.
+      const topeFinal = d.top + d.height / 2 - (kFinal * b.H) / 2;
+      // El nombre sube con la página (así el contenido de abajo nunca le
+      // pasa por encima) mientras se encoge, y se acopla al header cuando
+      // lo alcanza. El encogimiento dura un poco más que la subida para
+      // que el aterrizaje sea suave.
+      const recorrido = Math.max((b.T - topeFinal) * 1.2, 140);
+      const p = Math.min(Math.max(s / recorrido, 0), 1);
+      const e = suave(p);
+      const k = 1 + (kFinal - 1) * e;
+      const izquierda = b.L + (d.left - b.L) * e;
+      const tope = Math.max(topeFinal, b.T - s);
+      const tx = izquierda - b.L;
+      const ty = tope - (b.T - s);
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${k})`;
+      // Relevo: en el último tramo el cartel se apaga y el logo del
+      // header (que lee este mismo progreso) se enciende.
+      el.style.opacity = String(p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.12));
+      progresoLogo.set(p);
+    },
+    [reducido]
+  );
+
+  useEffect(() => {
+    const medir = () => {
+      const el = nombreRef.current;
+      if (!el) return;
+      const previo = el.style.transform;
+      el.style.transform = "none";
+      const r = el.getBoundingClientRect();
+      base.current = { L: r.left, T: r.top + window.scrollY, W: r.width, H: r.height };
+      el.style.transform = previo;
+      actualizar(window.scrollY);
+    };
+    medir();
+    // La fuente cambia el ancho real del nombre: se vuelve a medir cuando
+    // termina de cargar, y al cambiar el tamaño de la ventana.
+    document.fonts?.ready.then(medir);
+    window.addEventListener("resize", medir);
+    return () => {
+      window.removeEventListener("resize", medir);
+      progresoLogo.set(0);
+    };
+  }, [actualizar]);
+
+  useMotionValueEvent(scrollY, "change", actualizar);
 
   return (
-    <div className="relative">
-      <div className="relative [container-type:inline-size]">
+    <div className="relative [container-type:inline-size]">
+      <motion.div style={{ opacity: opDetalles }}>
         <Escuadra className="-left-2 -top-3 md:-left-4 md:-top-5" />
         <Escuadra className="-right-2 -top-3 md:-right-4 md:-top-5 rotate-90" />
-        <p
-          aria-hidden
-          className="font-logo text-[var(--forst-green)] whitespace-nowrap select-none leading-[0.8] pt-[0.04em]"
-          style={{ fontSize: `calc(100cqw / ${ANCHO_TOTAL})` }}
-        >
-          {LETRAS.map((l, i) => (
-            <Letra key={l.ch} ch={l.ch} ancho={l.ancho} indice={i} mx={mx} my={my} reducido={reducido} />
-          ))}
-        </p>
-        {/* Línea base con la ubicación, como la cota de un plano. */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1.1, ease: EASE, delay: 0.5 }}
-          className="mt-3 md:mt-4 flex items-center gap-3 origin-left"
-        >
-          <span className="h-px flex-1 bg-[var(--forst-green)]/25" />
-          <span className="hidden sm:inline t-eyebrow text-black/45 whitespace-nowrap">12°02′ S · 77°02′ O</span>
-        </motion.div>
-      </div>
-
-      {/* La isla, delante del nombre. En escritorio flota sobre el centro
-          del cartel; en pantallas chicas baja al flujo y solo pisa el
-          borde inferior de las letras. `pointer-events-none` para que la
-          lupa siga respondiendo aunque el cursor pase por encima. */}
-      <div
-        style={{ "--retraso": "0.55s" } as React.CSSProperties}
-        className="aparecer pointer-events-none relative z-10 mx-auto -mt-[5%] w-[64%] sm:w-[46%] lg:absolute lg:left-1/2 lg:top-[30%] lg:mt-0 lg:w-[20%] lg:-translate-x-1/2"
+      </motion.div>
+      {/* z-[60]: en su viaje el nombre pasa por encima del header fijo. */}
+      <p
+        ref={nombreRef}
+        aria-hidden
+        className="relative z-[60] origin-top-left will-change-transform font-logo text-[var(--forst-green)] whitespace-nowrap select-none leading-[0.8] pt-[0.04em]"
+        style={{ fontSize: `calc(100cqw / ${ANCHO_TOTAL})` }}
       >
-        <motion.div
-          animate={reducido ? undefined : { y: [0, -12, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
-        >
-          <Image
-            src="https://ijmygnxkuutgbcdgkjqj.supabase.co/storage/v1/object/public/forst-assets/img/hero-isla.webp"
-            alt="Isla de musgo con una laptop, como escenario de trabajo de FORST"
-            width={1122}
-            height={1284}
-            priority
-            sizes="(max-width: 640px) 64vw, (max-width: 1024px) 46vw, 26vw"
-            className="w-full h-auto drop-shadow-[0_34px_40px_rgba(0,46,44,0.25)]"
-          />
-        </motion.div>
-      </div>
+        {LETRAS.map((l, i) => (
+          <Letra key={l.ch} ch={l.ch} ancho={l.ancho} indice={i} mx={mx} my={my} reducido={reducido} />
+        ))}
+      </p>
+      {/* Línea base con la ubicación, como la cota de un plano. */}
+      {/* La entrada (CSS) va en el hijo: una animación CSS le ganaría a la
+          opacidad que el scroll le pone al contenedor. */}
+      <motion.div style={{ opacity: opDetalles }} className="mt-3 md:mt-4">
+        <div className="aparecer flex items-center gap-3">
+          <span className="h-px flex-1 bg-[var(--forst-green)]/25" />
+          <span className="hidden sm:inline t-eyebrow text-[var(--forst-black)]/55 whitespace-nowrap">12°02′ S · 77°02′ O</span>
+        </div>
+      </motion.div>
     </div>
   );
 }
 
-export default function Hero({ portal = false }: { portal?: boolean }) {
+export default function Hero() {
   // Posición del cursor en la ventana. -1 significa "fuera del Hero":
   // las letras vuelven al peso de reposo. Solo cuenta el mouse; en
   // pantallas táctiles el cartel queda quieto después de la entrada.
@@ -287,15 +258,10 @@ export default function Hero({ portal = false }: { portal?: boolean }) {
         mx.set(-1);
         my.set(-1);
       }}
-      className="relative overflow-hidden min-h-[100svh] flex pt-6 pb-10 md:pt-10 md:pb-12 px-6 md:px-10"
+      className="relative overflow-hidden min-h-[100svh] flex flex-col px-6 md:px-10 pt-24 md:pt-28 pb-10 md:pb-12"
     >
-      {/* El marco tipo "web dentro de web": el Hero completo, header
-          incluido, vive dentro de una ventana con borde propio. Mismo
-          margen que el header real para que los bordes queden alineados. */}
-      <div className="max-w-[104rem] mx-auto w-full rounded-[2rem] md:rounded-[2.5rem] border border-[var(--forst-line)] p-6 md:p-10 xl:p-14 flex flex-col">
-        <HeaderEnMarco portal={portal} />
-
-        <div className="aparecer flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-black/55">
+      <div className="max-w-[104rem] mx-auto w-full flex-1 flex flex-col">
+        <div className="aparecer flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-[var(--forst-black)]/60">
           <span className="flex items-center gap-3">
             <span className="w-2 h-2 rotate-45 bg-[var(--forst-green)] inline-block" />
             Plataforma empresarial
@@ -304,29 +270,20 @@ export default function Hero({ portal = false }: { portal?: boolean }) {
           <span className="hidden sm:inline">Lima, Perú</span>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center py-8 lg:py-6">
+        <div className="flex-1 flex flex-col justify-center py-10 lg:py-8">
           <Cartel mx={mx} my={my} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-end">
           {/* `min-w-0`: un item de grid no encoge por debajo de su palabra
-              más larga, y en pantallas angostas desbordaba el marco. */}
+              más larga, y en pantallas angostas desbordaba. */}
           <div className="min-w-0 lg:col-span-5 xl:col-span-4">
             <h1 className="font-display text-[clamp(1.4rem,2.1vw,2rem)] leading-[1.18] text-[var(--forst-green)] text-balance">
               <WordReveal text="Creamos soluciones para negocios" />
-              <span className="text-black/70">
+              <span className="text-[var(--forst-black)]/75">
                 <WordReveal text="listos para evolucionar." />
               </span>
             </h1>
-
-            <p
-              style={{ "--retraso": "0.85s" } as React.CSSProperties}
-              className="aparecer mt-5 measure-tight text-[15px] leading-relaxed text-black/60"
-            >
-              Una plataforma empresarial{" "}
-              <Resaltado delay={1.3}>hecha a la medida</Resaltado> de tu
-              negocio, con la cara de tu marca y no la de una plantilla.
-            </p>
 
             <div
               style={{ "--retraso": "1s" } as React.CSSProperties}
@@ -343,7 +300,7 @@ export default function Hero({ portal = false }: { portal?: boolean }) {
               </Link>
               <Link
                 href="/portafolio"
-                className="text-[12px] font-medium uppercase tracking-[0.14em] text-black/70 underline underline-offset-[6px] decoration-[var(--forst-line)] hover:text-[var(--forst-green)] hover:decoration-[var(--forst-green)] transition-colors"
+                className="text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--forst-black)] underline underline-offset-[6px] decoration-[var(--forst-line)] hover:text-[var(--forst-green)] hover:decoration-[var(--forst-green)] transition-colors"
               >
                 Ver casos reales
               </Link>
@@ -357,15 +314,15 @@ export default function Hero({ portal = false }: { portal?: boolean }) {
             style={{ "--retraso": "1.1s" } as React.CSSProperties}
             className="aparecer min-w-0 lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10"
           >
-            <p className="t-eyebrow text-black/50">Qué hacemos</p>
+            <p className="t-eyebrow text-[var(--forst-black)]/60">Qué hacemos</p>
             <ol className="mt-3 border-t border-[var(--forst-line)]">
               {categorias.map((c) => (
                 <li key={c.slug} className="border-b border-[var(--forst-line)]">
                   <Link
                     href={`/servicios#${c.slug}`}
-                    className="group flex items-baseline gap-3 py-2 text-[14px] text-black/70 hover:text-[var(--forst-green)] transition-colors"
+                    className="group flex items-baseline gap-3 py-2 text-[14px] text-[var(--forst-black)] hover:text-[var(--forst-green)] transition-colors"
                   >
-                    <span className="tabular-nums text-[11px] text-[var(--forst-green)]/70">{c.numero}</span>
+                    <span className="tabular-nums text-[11px] text-[var(--forst-green)]">{c.numero}</span>
                     {c.nombre}
                     <ArrowUpRight
                       aria-hidden

@@ -1,34 +1,26 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "motion/react";
+import { motion, useScroll, useMotionValueEvent, useTransform } from "motion/react";
 import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import MobileMenu from "@/components/layout/MobileMenu";
 import BotonSignIn from "@/components/layout/BotonSignIn";
-import { EASE } from "@/lib/motion-variants";
+import { progresoLogo } from "@/lib/logo-scroll";
 
 /**
- * Header con navegación en "píldoras" agrupadas (referencia Cofounder):
- * la barra en sí no tiene fondo — al inicio flota sobre el hero y al
- * hacer scroll pasa a blanco SÓLIDO (nada translúcido). Los grupos de
- * links llevan su propia píldora, colocados hacia la derecha pero con
- * aire (no pegados al borde).
+ * Header fijo con navegación en "píldoras" agrupadas. Al inicio flota
+ * transparente sobre la página y al hacer scroll pasa a blanco sólido.
  *
- * En Inicio, mientras estás arriba del todo, la navegación la trae el
- * marco del Hero (HeaderEnMarco, en Hero.tsx) — este header fijo recién
- * se monta cuando esa fila ya salió de la vista (el umbral se mide
- * contra su posición real, no un número fijo). Logo, nav, Contacto y el
- * CTA comparten layoutId con sus contrapartes del marco: al montar o
- * desmontar, Framer anima cada pieza desde su posición en el marco hasta
- * acá (o al revés) — un solo header transformándose, no dos cruzando en
- * opacidad.
+ * En Inicio el logo no está arriba del todo: el nombre gigante del Hero
+ * es el logo. Al hacer scroll ese nombre viaja hasta acá, y el logo real
+ * aparece en el último tramo del viaje (lee `progresoLogo`, que escribe
+ * el Hero). El "FORST" de este logo lleva el id `logo-header-texto`
+ * porque es el punto de llegada que mide el Hero.
+ *
+ * Textos en plomo carbón (#191919): sobre el marfil, el gris al 65 % se
+ * leía débil.
  */
 
 const grupoPrincipal = [
@@ -47,6 +39,11 @@ function irArriba(pathname: string, href: string, e: React.MouseEvent) {
   }
 }
 
+const enlaceBase =
+  "px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2";
+const enlaceInactivo = "text-[var(--forst-black)] hover:text-[var(--forst-green)] hover:bg-black/[0.04]";
+const enlaceActivo = "text-[var(--forst-green)] font-medium";
+
 /** `portal`: si el portal de clientes está activo (lo decide el servidor
  * según sus variables de entorno). Sin portal no hay botón Sign in. */
 export default function Header({ portal = false }: { portal?: boolean }) {
@@ -54,6 +51,12 @@ export default function Header({ portal = false }: { portal?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { scrollY } = useScroll();
+
+  // Logo de Inicio, atado al viaje del nombre del Hero.
+  const opLogo = useTransform(progresoLogo, [0.82, 1], [0, 1]);
+  const escalaIsotipo = useTransform(progresoLogo, [0.82, 1], [0.4, 1]);
+  const giroIsotipo = useTransform(progresoLogo, [0.82, 1], [-90, 0]);
+  const clicLogo = useTransform(progresoLogo, (p) => (p > 0.5 ? "auto" : "none"));
 
   // La página de un caso (Casos > DFG/VELKAI) es una experiencia propia,
   // sin el chrome del sitio encima — cada caso trae su propia
@@ -68,37 +71,14 @@ export default function Header({ portal = false }: { portal?: boolean }) {
   // nueva. Cerrarlo también al cambiar de ruta lo deja siempre en un
   // estado coherente, venga el cambio de donde venga (link, botón atrás).
   // Ajustado durante el render y no en un efecto: es el patrón que React
-  // recomienda para estado derivado de un valor que cambia, y evita el
-  // render extra que provoca un setState dentro de useEffect.
+  // recomienda para estado derivado de un valor que cambia.
   const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
   if (rutaDelMenu !== pathname) {
     setRutaDelMenu(pathname);
     setOpen(false);
   }
 
-  // En el resto del sitio el umbral es chico, nomás para pasar de
-  // transparente a blanco sólido. En Inicio el umbral real es dónde
-  // termina la fila de navegación del marco del Hero — se mide contra
-  // su posición en el documento, no un número fijo, porque esa fila
-  // cambia de alto según el viewport.
-  const umbralRef = useRef(32);
-  useEffect(() => {
-    if (!enHome) {
-      umbralRef.current = 32;
-      return;
-    }
-    const medir = () => {
-      const fila = document.getElementById("header-en-marco");
-      if (fila) {
-        umbralRef.current = fila.getBoundingClientRect().bottom + window.scrollY;
-      }
-    };
-    medir();
-    window.addEventListener("resize", medir);
-    return () => window.removeEventListener("resize", medir);
-  }, [enHome]);
-
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > umbralRef.current));
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 32));
 
   const pillBase = scrolled
     ? "bg-black/[0.05]"
@@ -106,123 +86,105 @@ export default function Header({ portal = false }: { portal?: boolean }) {
 
   if (enCasoDetalle || enPortal) return null;
 
-  // En el resto del sitio este header vive montado siempre. En Inicio
-  // solo se monta una vez pasado el umbral — mientras tanto es
-  // HeaderEnMarco (en Hero.tsx) el que existe, y el layoutId compartido
-  // es lo que conecta a los dos como si fueran uno.
-  const montado = enHome ? scrolled : true;
-
   return (
     <>
-      <AnimatePresence>
-        {montado && (
-          <motion.header
-            key="header-fijo"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: EASE }}
-            className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
-              scrolled
-                ? "py-3 bg-white border-b border-[var(--forst-line)]"
-                : "py-4 bg-transparent border-b border-transparent"
-            }`}
+      <header
+        className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
+          scrolled
+            ? "py-3 bg-white border-b border-[var(--forst-line)]"
+            : "py-4 bg-transparent border-b border-transparent"
+        }`}
+      >
+        <motion.div
+          className="lg:justify-self-start"
+          // Valores explícitos fuera de Inicio: si solo se quitara el
+          // estilo, Motion dejaría puesta la última opacidad (0) al navegar
+          // desde Inicio a otra página.
+          style={{ opacity: enHome ? opLogo : 1, pointerEvents: enHome ? clicLogo : "auto" }}
+        >
+          <Link
+            href="/"
+            onClick={(e) => irArriba(pathname, "/", e)}
+            aria-label="FORST, ir al inicio"
+            className="flex items-center gap-2.5 group"
           >
-            <motion.div layoutId="site-logo" className="lg:justify-self-start">
-              <Link
-                href="/"
-                onClick={(e) => irArriba(pathname, "/", e)}
-                className="flex items-center gap-2.5 group"
-              >
-                <AnimatedLogo size={40} animateOnMount={false} />
-                <span className="font-logo text-lg tracking-[0.04em] text-black">
-                  FORST
-                </span>
-              </Link>
-            </motion.div>
-
-            {/* Navegación principal, centrada entre el logo y el CTA. */}
-            <motion.nav
-              layoutId="site-nav-pill"
-              className={`hidden lg:flex items-center rounded-full p-1 transition-colors duration-500 lg:justify-self-center ${pillBase}`}
+            <motion.span
+              className="block"
+              style={{ scale: enHome ? escalaIsotipo : 1, rotate: enHome ? giroIsotipo : 0 }}
             >
-              {grupoPrincipal.map((l, i) => {
-                const active = pathname.startsWith(l.href);
-                return (
-                  <span key={l.href} className="flex items-center">
-                    {i > 0 && <span className="w-px h-4 bg-black/10" />}
-                    <Link
-                      href={l.href}
-                      onClick={(e) => irArriba(pathname, l.href, e)}
-                      className={`px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
-                        active
-                          ? "text-[var(--forst-green)] font-medium"
-                          : "text-black/65 hover:text-black hover:bg-black/[0.04]"
-                      }`}
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="nav-diamond"
-                          className="w-[6px] h-[6px] rotate-45 bg-[var(--forst-green)]"
-                        />
-                      )}
-                      {l.label}
-                    </Link>
-                  </span>
-                );
-              })}
-            </motion.nav>
+              <AnimatedLogo size={40} animateOnMount={false} />
+            </motion.span>
+            <span id="logo-header-texto" className="font-logo text-lg tracking-[0.04em] text-[var(--forst-black)]">
+              FORST
+            </span>
+          </Link>
+        </motion.div>
 
-            <div className="hidden lg:flex items-center gap-3 lg:justify-self-end">
-              {portal && <BotonSignIn layoutId="site-signin" fondo={pillBase} />}
-              <motion.nav
-                layoutId="site-contacto-pill"
-                className={`flex items-center rounded-full p-1 transition-colors duration-500 ${pillBase}`}
-              >
+        {/* Navegación principal, centrada entre el logo y el CTA. */}
+        <nav className={`hidden lg:flex items-center rounded-full p-1 transition-colors duration-500 lg:justify-self-center ${pillBase}`}>
+          {grupoPrincipal.map((l, i) => {
+            const active = pathname.startsWith(l.href);
+            return (
+              <span key={l.href} className="flex items-center">
+                {i > 0 && <span className="w-px h-4 bg-black/10" />}
                 <Link
-                  href="/contacto"
-                  onClick={(e) => irArriba(pathname, "/contacto", e)}
-                  className={`px-3 xl:px-4 py-2 rounded-full text-[13px] uppercase tracking-wide transition-colors flex items-center gap-2 ${
-                    pathname.startsWith("/contacto")
-                      ? "text-[var(--forst-green)] font-medium"
-                      : "text-black/65 hover:text-black hover:bg-black/[0.04]"
-                  }`}
+                  href={l.href}
+                  onClick={(e) => irArriba(pathname, l.href, e)}
+                  className={`${enlaceBase} ${active ? enlaceActivo : enlaceInactivo}`}
                 >
-                  {pathname.startsWith("/contacto") && (
+                  {active && (
                     <motion.span
                       layoutId="nav-diamond"
-                      className="w-[6px] h-[6px] rotate-45 bg-[var(--forst-tan)]"
+                      className="w-[6px] h-[6px] rotate-45 bg-[var(--forst-green)]"
                     />
                   )}
-                  Contacto
+                  {l.label}
                 </Link>
-              </motion.nav>
+              </span>
+            );
+          })}
+        </nav>
 
-              <motion.a
-                layoutId="site-cta"
-                href="https://wa.me/51962316856?text=Hola%20FORST%2C%20quiero%20conversar%20sobre%20mi%20negocio."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block rounded-full text-[13px] font-medium uppercase tracking-wide px-5 py-3 bg-[var(--forst-green)]/80 text-white backdrop-blur-md hover:bg-[var(--forst-green)] transition-colors duration-300"
-              >
-                Conversemos
-              </motion.a>
-            </div>
+        <div className="hidden lg:flex items-center gap-3 lg:justify-self-end">
+          {portal && <BotonSignIn fondo={pillBase} />}
+          <nav className={`flex items-center rounded-full p-1 transition-colors duration-500 ${pillBase}`}>
+            <Link
+              href="/contacto"
+              onClick={(e) => irArriba(pathname, "/contacto", e)}
+              className={`${enlaceBase} ${pathname.startsWith("/contacto") ? enlaceActivo : enlaceInactivo}`}
+            >
+              {pathname.startsWith("/contacto") && (
+                <motion.span
+                  layoutId="nav-diamond"
+                  className="w-[6px] h-[6px] rotate-45 bg-[var(--forst-tan)]"
+                />
+              )}
+              Contacto
+            </Link>
+          </nav>
 
-            <div className="lg:hidden flex items-center gap-2">
-              {portal && <BotonSignIn fondo={pillBase} />}
-              <button
-                onClick={() => setOpen(true)}
-                aria-label="Abrir menú"
-                className="flex flex-col justify-center items-end gap-1.5 w-10 h-10"
-              >
-                <span className="block w-6 h-[2px] bg-black" />
-                <span className="block w-4 h-[2px] bg-black" />
-              </button>
-            </div>
-          </motion.header>
-        )}
-      </AnimatePresence>
+          <a
+            href="https://wa.me/51962316856?text=Hola%20FORST%2C%20quiero%20conversar%20sobre%20mi%20negocio."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full text-[13px] font-medium uppercase tracking-wide px-5 py-3 bg-[var(--forst-green)] text-white hover:bg-[var(--forst-green-soft)] transition-colors duration-300"
+          >
+            Conversemos
+          </a>
+        </div>
+
+        <div className="lg:hidden flex items-center gap-2">
+          {portal && <BotonSignIn fondo={pillBase} />}
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Abrir menú"
+            className="flex flex-col justify-center items-end gap-1.5 w-10 h-10"
+          >
+            <span className="block w-6 h-[2px] bg-[var(--forst-black)]" />
+            <span className="block w-4 h-[2px] bg-[var(--forst-black)]" />
+          </button>
+        </div>
+      </header>
 
       <MobileMenu open={open} onClose={() => setOpen(false)} />
     </>
