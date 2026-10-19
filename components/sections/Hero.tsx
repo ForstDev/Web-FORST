@@ -12,7 +12,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { Building2, Globe, ScanSearch, Smartphone, Workflow, type LucideIcon } from "lucide-react";
 import WordReveal from "@/components/animations/WordReveal";
 import { categorias } from "@/data/categorias";
 import { progresoLogo } from "@/lib/logo-scroll";
@@ -235,7 +235,66 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
           <span className="hidden sm:inline t-eyebrow text-[var(--forst-black)]/55 whitespace-nowrap">12°02′ S · 77°02′ O</span>
         </div>
       </motion.div>
+      <ArcoAreas reducido={reducido} />
     </div>
+  );
+}
+
+/** Un ícono por área de servicio (las categorías no traen uno propio). */
+const ICONOS_AREA: Record<string, LucideIcon> = {
+  "productos-web": Globe,
+  "sistemas-de-gestion": Building2,
+  "automatizacion-y-datos": Workflow,
+  "app-movil": Smartphone,
+  posicionamiento: ScanSearch,
+};
+
+/**
+ * Las cinco áreas como un arco de círculos verdes bajo el cartel. Entran
+ * desde el centro hacia afuera cuando el nombre ya terminó de aparecer,
+ * y se apagan junto con la cota cuando el nombre viaja al header.
+ */
+function ArcoAreas({ reducido }: { reducido: boolean }) {
+  // La opacidad del scroll va en el contenedor; la entrada CSS, en los
+  // hijos (una animación CSS le ganaría a la opacidad en línea).
+  const opacidad = useTransform(progresoLogo, [0, 0.25], [1, 0]);
+  // Ya apagado, el arco deja de recibir clics y foco.
+  const visibilidad = useTransform(progresoLogo, (p) => (p >= 0.25 ? "hidden" : "visible"));
+  const centro = (categorias.length - 1) / 2;
+
+  return (
+    <motion.nav
+      aria-label="Áreas de servicio"
+      style={reducido ? undefined : { opacity: opacidad, visibility: visibilidad }}
+      className="mt-6 md:mt-8"
+    >
+      <ul className="arco">
+        {categorias.map((c, i) => {
+          const Icono = ICONOS_AREA[c.slug] ?? Globe;
+          const distancia = Math.abs(i - centro) / centro; // 0 centro, 1 puntas
+          return (
+            <li key={c.slug} style={{ "--nivel": 1 - distancia ** 2 } as React.CSSProperties}>
+              <span
+                className="arco-entra"
+                style={{ "--retraso": `${1.05 + Math.abs(i - centro) * 0.1}s` } as React.CSSProperties}
+              >
+                <span className="arco-flota" style={{ "--fase": `${-i * 1.1}s` } as React.CSSProperties}>
+                  <Link href={`/servicios#${c.slug}`} aria-label={c.nombre} className="arco-icono relative">
+                    <Icono aria-hidden />
+                    <span
+                      aria-hidden
+                      className="arco-etiqueta text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--forst-black)]"
+                    >
+                      {c.nombre}
+                    </span>
+                  </Link>
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </motion.nav>
   );
 }
 
@@ -274,65 +333,36 @@ export default function Hero() {
           <Cartel mx={mx} my={my} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-end">
-          {/* `min-w-0`: un item de grid no encoge por debajo de su palabra
-              más larga, y en pantallas angostas desbordaba. */}
-          <div className="min-w-0 lg:col-span-5 xl:col-span-4">
-            <h1 className="font-display text-[clamp(1.4rem,2.1vw,2rem)] leading-[1.18] text-[var(--forst-green)] text-balance">
-              <WordReveal text="Creamos soluciones para negocios" />
-              <span className="text-[var(--forst-black)]/75">
-                <WordReveal text="listos para evolucionar." />
-              </span>
-            </h1>
+        {/* `min-w-0`: en pantallas angostas el bloque no desborda por su
+            palabra más larga. */}
+        <div className="min-w-0 max-w-[34rem]">
+          <h1 className="font-display text-[clamp(1.4rem,2.1vw,2rem)] leading-[1.18] text-[var(--forst-green)] text-balance">
+            <WordReveal text="Creamos soluciones para negocios" />
+            <span className="text-[var(--forst-black)]/75">
+              <WordReveal text="listos para evolucionar." />
+            </span>
+          </h1>
 
-            <div
-              style={{ "--retraso": "1s" } as React.CSSProperties}
-              className="aparecer mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
-            >
-              {/* `max-w-full` + `shrink-0` en el punto: en pantallas muy
-                  angostas el texto del botón envuelve en vez de desbordar. */}
-              <Link
-                href="/contacto"
-                className="group inline-flex max-w-full items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
-              >
-                <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
-                Hablemos de tu negocio
-              </Link>
-              <Link
-                href="/portafolio"
-                className="text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--forst-black)] underline underline-offset-[6px] decoration-[var(--forst-line)] hover:text-[var(--forst-green)] hover:decoration-[var(--forst-green)] transition-colors"
-              >
-                Ver casos reales
-              </Link>
-            </div>
-          </div>
-
-          {/* Las cinco áreas, como índice del cartel. Cada una lleva a su
-              sección en /servicios. */}
-          <nav
-            aria-label="Áreas de servicio"
-            style={{ "--retraso": "1.1s" } as React.CSSProperties}
-            className="aparecer min-w-0 lg:col-span-4 lg:col-start-9 xl:col-span-3 xl:col-start-10"
+          <div
+            style={{ "--retraso": "1s" } as React.CSSProperties}
+            className="aparecer mt-7 flex flex-wrap items-center gap-x-6 gap-y-3"
           >
-            <p className="t-eyebrow text-[var(--forst-black)]/60">Qué hacemos</p>
-            <ol className="mt-3 border-t border-[var(--forst-line)]">
-              {categorias.map((c) => (
-                <li key={c.slug} className="border-b border-[var(--forst-line)]">
-                  <Link
-                    href={`/servicios#${c.slug}`}
-                    className="group flex items-baseline gap-3 py-2 text-[14px] text-[var(--forst-black)] hover:text-[var(--forst-green)] transition-colors"
-                  >
-                    <span className="tabular-nums text-[11px] text-[var(--forst-green)]">{c.numero}</span>
-                    {c.nombre}
-                    <ArrowUpRight
-                      aria-hidden
-                      className="ml-auto h-3.5 w-3.5 self-center opacity-0 -translate-x-1 transition-[opacity,transform] duration-300 group-hover:opacity-100 group-hover:translate-x-0"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </nav>
+            {/* `max-w-full` + `shrink-0` en el punto: en pantallas muy
+                angostas el texto del botón envuelve en vez de desbordar. */}
+            <Link
+              href="/contacto"
+              className="group inline-flex max-w-full items-center gap-3 rounded-full bg-[var(--forst-green)] text-[var(--forst-white)] px-6 sm:px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] sm:tracking-[0.18em] transition-[background-color,transform] duration-200 hover:bg-[var(--forst-green-soft)] active:scale-[0.98]"
+            >
+              <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--forst-tan)] group-hover:translate-x-1 transition-transform" />
+              Hablemos de tu negocio
+            </Link>
+            <Link
+              href="/portafolio"
+              className="text-[12px] font-medium uppercase tracking-[0.14em] text-[var(--forst-black)] underline underline-offset-[6px] decoration-[var(--forst-line)] hover:text-[var(--forst-green)] hover:decoration-[var(--forst-green)] transition-colors"
+            >
+              Ver casos reales
+            </Link>
+          </div>
         </div>
       </div>
     </section>

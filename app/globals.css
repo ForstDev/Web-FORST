@@ -470,3 +470,142 @@ html {
   animation: palabra-entra 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--retraso, 0s);
 }
+
+/* Arco de áreas de servicio bajo el cartel del Hero. Cinco círculos
+   verdes colgados en una curva suave (el centro más abajo). Cada capa
+   lleva un solo movimiento para que no se pisen:
+   li (posición en el arco) > .arco-entra (entrada) > .arco-flota
+   (flotación) > a.arco-icono (hover y foco). */
+.arco {
+  --arco-d: 46px; /* diámetro */
+  --arco-caida: 10px; /* cuánto baja el centro respecto de las puntas */
+  --arco-hueco: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--arco-hueco);
+  /* Altura reservada desde el inicio: sin saltos al entrar. */
+  height: calc(var(--arco-d) + var(--arco-caida) + 6px);
+}
+@media (min-width: 768px) {
+  .arco {
+    --arco-d: 64px;
+    --arco-caida: 22px;
+    --arco-hueco: 44px;
+    /* En escritorio se suma el lugar de la etiqueta. */
+    height: calc(var(--arco-d) + var(--arco-caida) + 34px);
+  }
+}
+.arco > li {
+  position: relative;
+  /* --nivel: 0 en las puntas, 1 en el centro. */
+  margin-top: calc(var(--nivel, 0) * var(--arco-caida));
+}
+@keyframes arco-entra {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.arco-entra {
+  display: block;
+  animation: arco-entra 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--retraso, 0s);
+}
+@keyframes arco-flota {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.arco-flota {
+  display: block;
+  animation: arco-flota 5.6s ease-in-out infinite;
+  animation-delay: var(--fase, 0s);
+}
+.arco-icono {
+  display: grid;
+  place-items: center;
+  width: var(--arco-d);
+  height: var(--arco-d);
+  border-radius: 9999px;
+  background: var(--forst-green);
+  color: var(--forst-white);
+  box-shadow: 0 0 0 0 rgb(0 46 44 / 0);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  outline: none;
+}
+.arco-icono svg {
+  width: 42%;
+  height: 42%;
+  stroke-width: 1.5;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.arco-etiqueta {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  translate: -50% -4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease-out,
+    translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) {
+  .arco-icono:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 0 0 6px rgb(0 46 44 / 0.12);
+  }
+  .arco-icono:hover svg {
+    transform: rotate(-10deg);
+  }
+  .arco-icono:hover .arco-etiqueta {
+    opacity: 1;
+    translate: -50% 0;
+  }
+}
+.arco-icono:focus-visible {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow:
+    0 0 0 3px var(--forst-white),
+    0 0 0 5px var(--forst-green);
+}
+.arco-icono:focus-visible svg {
+  transform: rotate(-10deg);
+}
+.arco-icono:focus-visible .arco-etiqueta {
+  opacity: 1;
+  translate: -50% 0;
+}
+/* En pantallas angostas las etiquetas no caben: solo queda el nombre
+   accesible (aria-label). */
+@media (max-width: 767px) {
+  .arco-etiqueta {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arco-entra,
+  .arco-flota {
+    animation: none;
+  }
+  .arco-icono:hover,
+  .arco-icono:focus-visible {
+    transform: none;
+  }
+  .arco-icono:hover svg,
+  .arco-icono:focus-visible svg {
+    transform: none;
+  }
+}
