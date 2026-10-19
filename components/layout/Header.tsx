@@ -8,6 +8,7 @@ import AnimatedLogo from "@/components/animations/AnimatedLogo";
 import MobileMenu from "@/components/layout/MobileMenu";
 import BotonSignIn from "@/components/layout/BotonSignIn";
 import { progresoLogo } from "@/lib/logo-scroll";
+import { LETRAS } from "@/lib/forst-letras";
 
 /**
  * Header fijo con navegación en "píldoras" agrupadas. Al inicio flota
@@ -17,7 +18,9 @@ import { progresoLogo } from "@/lib/logo-scroll";
  * es el logo. Al hacer scroll ese nombre viaja hasta acá, y el logo real
  * aparece en el último tramo del viaje (lee `progresoLogo`, que escribe
  * el Hero). El "FORST" de este logo lleva el id `logo-header-texto`
- * porque es el punto de llegada que mide el Hero.
+ * porque es el punto de llegada que mide el Hero. En todo el sitio se
+ * dibuja igual que el nombre del Hero ya aterrizado: verde, Lexend Giga
+ * en peso 400 y la misma caja por letra (LETRAS), así el relevo no se nota.
  *
  * Textos en plomo carbón (#191919): sobre el marfil, el gris al 65 % se
  * leía débil.
@@ -52,11 +55,17 @@ export default function Header({ portal = false }: { portal?: boolean }) {
   const pathname = usePathname();
   const { scrollY } = useScroll();
 
-  // Logo de Inicio, atado al viaje del nombre del Hero.
-  const opLogo = useTransform(progresoLogo, [0.82, 1], [0, 1]);
-  const escalaIsotipo = useTransform(progresoLogo, [0.82, 1], [0.4, 1]);
-  const giroIsotipo = useTransform(progresoLogo, [0.82, 1], [-90, 0]);
-  const clicLogo = useTransform(progresoLogo, (p) => (p > 0.5 ? "auto" : "none"));
+  // Logo de Inicio, atado al viaje del nombre del Hero. Solo recibe
+  // clics cuando ya se ve.
+  const opLogo = useTransform(progresoLogo, [0.94, 1], [0, 1]);
+  const opTexto = useTransform(progresoLogo, (p) => (p >= 0.999 ? 1 : 0));
+  const escalaIsotipo = useTransform(progresoLogo, [0.9, 1], [0.4, 1]);
+  const giroIsotipo = useTransform(progresoLogo, [0.9, 1], [-90, 0]);
+  const clicLogo = useTransform(progresoLogo, (p) => (p >= 0.94 ? "auto" : "none"));
+  // En Inicio el borde inferior del header espera a que el nombre se
+  // acople: si no, la línea le cruza las letras en pleno viaje.
+  const [acoplado, setAcoplado] = useState(() => progresoLogo.get() >= 0.98);
+  useMotionValueEvent(progresoLogo, "change", (p) => setAcoplado(p >= 0.98));
 
   // La página de un caso (Casos > DFG/VELKAI) es una experiencia propia,
   // sin el chrome del sitio encima — cada caso trae su propia
@@ -91,7 +100,7 @@ export default function Header({ portal = false }: { portal?: boolean }) {
       <header
         className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[1fr_auto_1fr] px-6 md:px-10 transition-colors duration-500 ${
           scrolled
-            ? "py-3 bg-white border-b border-[var(--forst-line)]"
+            ? `py-3 bg-white border-b ${enHome && !acoplado ? "border-transparent" : "border-[var(--forst-line)]"}`
             : "py-4 bg-transparent border-b border-transparent"
         }`}
       >
@@ -100,7 +109,7 @@ export default function Header({ portal = false }: { portal?: boolean }) {
           // Valores explícitos fuera de Inicio: si solo se quitara el
           // estilo, Motion dejaría puesta la última opacidad (0) al navegar
           // desde Inicio a otra página.
-          style={{ opacity: enHome ? opLogo : 1, pointerEvents: enHome ? clicLogo : "auto" }}
+          style={{ pointerEvents: enHome ? clicLogo : "auto" }}
         >
           <Link
             href="/"
@@ -110,13 +119,29 @@ export default function Header({ portal = false }: { portal?: boolean }) {
           >
             <motion.span
               className="block"
-              style={{ scale: enHome ? escalaIsotipo : 1, rotate: enHome ? giroIsotipo : 0 }}
+              style={{
+                opacity: enHome ? opLogo : 1,
+                scale: enHome ? escalaIsotipo : 1,
+                rotate: enHome ? giroIsotipo : 0,
+              }}
             >
               <AnimatedLogo size={40} animateOnMount={false} />
             </motion.span>
-            <span id="logo-header-texto" className="font-logo text-lg tracking-[0.04em] text-[var(--forst-black)]">
-              FORST
-            </span>
+            {/* Misma caja que el nombre del Hero (leading, relleno y ancho
+                por letra), a 18 px: unos 79 px de ancho en total. Como al
+                llegar coinciden píxel a píxel, el relevo es seco en p = 1:
+                un fundido cruzado mostraba dos "FORST" desfasados. */}
+            <motion.span
+              id="logo-header-texto"
+              className="font-logo text-[18px] leading-[0.8] pt-[0.04em] whitespace-nowrap text-[var(--forst-green)]"
+              style={{ fontVariationSettings: '"wght" 400', opacity: enHome ? opTexto : 1 }}
+            >
+              {LETRAS.map((l) => (
+                <span key={l.ch} className="inline-block text-center" style={{ width: `${l.ancho}em` }}>
+                  {l.ch}
+                </span>
+              ))}
+            </motion.span>
           </Link>
         </motion.div>
 

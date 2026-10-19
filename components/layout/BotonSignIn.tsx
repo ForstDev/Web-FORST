@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn } from "lucide-react";
+import { UserRound } from "lucide-react";
 
 /**
- * Acceso al portal de clientes: el ícono universal de iniciar sesión (flecha entrando a un marco) que, al pasar el
- * mouse (o al llegar con el teclado), se estira y muestra "Sign in". En
- * táctil no hay hover, así que el toque lleva directo al login.
+ * Acceso al portal de clientes: pastilla con un ícono de persona y la etiqueta "Sign in" siempre visible, sin
+ * efectos que dependan del hover. Comparte el estilo de la pastilla "Contacto" del header (mismo fondo por la
+ * prop `fondo`, mismo color y hover) y muestra un contorno verde al llegar con el teclado.
  */
 export default function BotonSignIn({
   fondo = "border border-[var(--forst-line)]",
@@ -18,12 +18,10 @@ export default function BotonSignIn({
       <Link
         href="/clientes"
         aria-label="Sign in, acceso clientes"
-        className="group flex h-9 items-center rounded-full px-[0.6rem] text-[13px] uppercase tracking-wide text-[var(--forst-black)] transition-colors hover:bg-black/[0.04] hover:text-[var(--forst-green)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--forst-green)]"
+        className="flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-[13px] uppercase tracking-wide text-[var(--forst-black)] transition-colors hover:bg-black/[0.04] hover:text-[var(--forst-green)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--forst-green)] xl:px-4"
       >
-        <LogIn className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden />
-        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-[max-width,opacity,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:ml-2 group-hover:max-w-[5rem] group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-[5rem] group-focus-visible:opacity-100">
-          Sign in
-        </span>
+        <UserRound className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden />
+        <span>Sign in</span>
       </Link>
     </div>
   );

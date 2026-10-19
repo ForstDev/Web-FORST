@@ -15,34 +15,28 @@ import {
 import { Building2, Globe, ScanSearch, Smartphone, Workflow, type LucideIcon } from "lucide-react";
 import WordReveal from "@/components/animations/WordReveal";
 import { categorias } from "@/data/categorias";
-import { progresoLogo } from "@/lib/logo-scroll";
+import { progresoLogo, recorridoLogo } from "@/lib/logo-scroll";
+import { ANCHO_TOTAL, LETRAS } from "@/lib/forst-letras";
+import { useAsentarLogo } from "@/lib/asentar-logo";
 
 /**
  * Hero en formato cartel ("brutalist billboard"): el nombre FORST ocupa
  * todo el ancho, verde sobre marfil, en la tipografía real del logo.
  *
- * Al hacer scroll el nombre se encoge y viaja hasta el lugar del logo en
- * el header. Ahí se funde con el logo real, que recién entonces aparece:
- * mientras el cartel está a la vista, el header no repite el nombre. Al
- * volver arriba el recorrido se deshace, porque va atado al scroll.
+ * Al hacer scroll el nombre se encoge apoyado en su línea de cota y sube
+ * con la página hasta el lugar del logo en el header. Ahí se funde con el
+ * logo real, que recién entonces aparece: mientras el cartel está a la
+ * vista, el header no repite el nombre. Al volver arriba el recorrido se
+ * deshace, porque va atado al scroll. Si el usuario suelta la rueda o el
+ * teclado a mitad de camino, el tramo se completa solo (ver asentar-logo).
  *
  * Cada letra además cambia de grosor según la cercanía del cursor, como
  * una lupa hecha con la tipografía.
  */
 
-/** Ancho de cada letra de Lexend Giga en su peso más grueso (900), en
- * em. Cada letra vive en una caja de ese ancho: cuando el cursor cambia
- * los grosores, las letras engordan o adelgazan dentro de su caja y el
- * cartel no se mueve de lado. La suma (4.375em) fija el tamaño de letra
- * para que FORST ocupe todo el ancho. */
-const LETRAS = [
-  { ch: "F", ancho: 0.795 },
-  { ch: "O", ancho: 1.013 },
-  { ch: "R", ancho: 0.884 },
-  { ch: "S", ancho: 0.818 },
-  { ch: "T", ancho: 0.865 },
-];
-const ANCHO_TOTAL = LETRAS.reduce((s, l) => s + l.ancho, 0);
+/* Las letras y sus cajas (LETRAS) viven en lib/forst-letras: el logo del
+   header usa las mismas. La suma de anchos (4.375em) fija el tamaño de
+   letra para que FORST ocupe todo el ancho del cartel. */
 
 const PESO_REPOSO = 600;
 const PESO_MIN = 220;
@@ -142,8 +136,7 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
   // Caja del nombre sin transformar, en coordenadas del documento.
   const base = useRef<{ L: number; T: number; W: number; H: number } | null>(null);
   const { scrollY } = useScroll();
-  // Escuadras y cota se apagan apenas el nombre empieza a viajar.
-  const opDetalles = useTransform(progresoLogo, [0, 0.25], [1, 0]);
+  useAsentarLogo(reducido);
 
   const actualizar = useCallback(
     (s: number) => {
@@ -156,31 +149,41 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
         // se ve desde el principio.
         el.style.transform = "";
         el.style.opacity = "";
+        el.style.visibility = "";
         progresoLogo.set(reducido ? 1 : 0);
+        recorridoLogo.set(0);
         return;
       }
       const d = destino.getBoundingClientRect();
       const kFinal = d.width / b.W;
-      // Borde superior que deja al nombre, ya en tamaño de logo, centrado
-      // en la altura del logo del header.
-      const topeFinal = d.top + d.height / 2 - (kFinal * b.H) / 2;
-      // El nombre sube con la página (así el contenido de abajo nunca le
-      // pasa por encima) mientras se encoge, y se acopla al header cuando
-      // lo alcanza. El encogimiento dura un poco más que la subida para
-      // que el aterrizaje sea suave.
-      const recorrido = Math.max((b.T - topeFinal) * 1.2, 140);
+      // Borde inferior del nombre ya acoplado (coordenadas de la ventana).
+      // El logo del header tiene la misma caja que el nombre, así que
+      // kFinal * b.H coincide con su alto y el nombre aterriza justo encima.
+      const pieFinal = d.top + d.height / 2 + (kFinal * b.H) / 2;
+      // Borde inferior sin transformar (coordenadas del documento).
+      const pieBase = b.T + b.H;
+      // El nombre se apoya en su línea de cota y se encoge hacia ella
+      // mientras sube con la página: la caja nunca queda vacía. Se acopla
+      // cuando su pie alcanza el header.
+      const recorrido = Math.max(pieBase - pieFinal, 140);
       const p = Math.min(Math.max(s / recorrido, 0), 1);
       const e = suave(p);
       const k = 1 + (kFinal - 1) * e;
       const izquierda = b.L + (d.left - b.L) * e;
-      const tope = Math.max(topeFinal, b.T - s);
+      // Viaja con la página; después queda fijo en el header.
+      const pie = Math.max(pieBase - s, pieFinal);
       const tx = izquierda - b.L;
-      const ty = tope - (b.T - s);
+      const ty = pie - k * b.H - (b.T - s); // con origin-top-left
       el.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${k})`;
       // Relevo: en el último tramo el cartel se apaga y el logo del
-      // header (que lee este mismo progreso) se enciende.
-      el.style.opacity = String(p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.12));
+      // header (que lee este mismo progreso) se enciende. Ya apagado deja
+      // de existir para el puntero, así no tapa el logo del header.
+      // Relevo seco con el logo del header: al llegar coinciden exactos.
+      const op = p >= 0.999 ? 0 : 1;
+      el.style.opacity = String(op);
+      el.style.visibility = op === 0 ? "hidden" : "";
       progresoLogo.set(p);
+      if (recorridoLogo.get() !== recorrido) recorridoLogo.set(recorrido);
     },
     [reducido]
   );
@@ -204,6 +207,7 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
     return () => {
       window.removeEventListener("resize", medir);
       progresoLogo.set(0);
+      recorridoLogo.set(0);
     };
   }, [actualizar]);
 
@@ -211,31 +215,32 @@ function Cartel({ mx, my }: { mx: MotionValue<number>; my: MotionValue<number> }
 
   return (
     <div className="relative [container-type:inline-size]">
-      <motion.div style={{ opacity: opDetalles }}>
+      <div>
         <Escuadra className="-left-2 -top-3 md:-left-4 md:-top-5" />
         <Escuadra className="-right-2 -top-3 md:-right-4 md:-top-5 rotate-90" />
-      </motion.div>
-      {/* z-[60]: en su viaje el nombre pasa por encima del header fijo. */}
+      </div>
+      {/* z-[60]: en su viaje el nombre pasa por encima del header fijo.
+          pointer-events-none: es decorativo y nunca debe tapar el logo del
+          header; la lupa la maneja el onPointerMove de la sección. */}
       <p
         ref={nombreRef}
         aria-hidden
-        className="relative z-[60] origin-top-left will-change-transform font-logo text-[var(--forst-green)] whitespace-nowrap select-none leading-[0.8] pt-[0.04em]"
+        className="relative z-[60] origin-top-left will-change-transform pointer-events-none font-logo text-[var(--forst-green)] whitespace-nowrap select-none leading-[0.8] pt-[0.04em]"
         style={{ fontSize: `calc(100cqw / ${ANCHO_TOTAL})` }}
       >
         {LETRAS.map((l, i) => (
           <Letra key={l.ch} ch={l.ch} ancho={l.ancho} indice={i} mx={mx} my={my} reducido={reducido} />
         ))}
       </p>
-      {/* Línea base con la ubicación, como la cota de un plano. */}
-      {/* La entrada (CSS) va en el hijo: una animación CSS le ganaría a la
-          opacidad que el scroll le pone al contenedor. */}
-      <motion.div style={{ opacity: opDetalles }} className="mt-3 md:mt-4">
+      {/* Línea base con la ubicación, como la cota de un plano. Sube con
+          la página mientras el nombre se encoge apoyado en ella. */}
+      <div className="mt-3 md:mt-4">
         <div className="aparecer flex items-center gap-3">
           <span className="h-px flex-1 bg-[var(--forst-green)]/25" />
           <span className="hidden sm:inline t-eyebrow text-[var(--forst-black)]/55 whitespace-nowrap">12°02′ S · 77°02′ O</span>
         </div>
-      </motion.div>
-      <ArcoAreas reducido={reducido} />
+      </div>
+      <ArcoAreas />
     </div>
   );
 }
@@ -252,22 +257,13 @@ const ICONOS_AREA: Record<string, LucideIcon> = {
 /**
  * Las cinco áreas como un arco de círculos verdes bajo el cartel. Entran
  * desde el centro hacia afuera cuando el nombre ya terminó de aparecer,
- * y se apagan junto con la cota cuando el nombre viaja al header.
+ * y suben con la página cuando el nombre viaja al header.
  */
-function ArcoAreas({ reducido }: { reducido: boolean }) {
-  // La opacidad del scroll va en el contenedor; la entrada CSS, en los
-  // hijos (una animación CSS le ganaría a la opacidad en línea).
-  const opacidad = useTransform(progresoLogo, [0, 0.25], [1, 0]);
-  // Ya apagado, el arco deja de recibir clics y foco.
-  const visibilidad = useTransform(progresoLogo, (p) => (p >= 0.25 ? "hidden" : "visible"));
+function ArcoAreas() {
   const centro = (categorias.length - 1) / 2;
 
   return (
-    <motion.nav
-      aria-label="Áreas de servicio"
-      style={reducido ? undefined : { opacity: opacidad, visibility: visibilidad }}
-      className="mt-6 md:mt-8"
-    >
+    <nav aria-label="Áreas de servicio" className="mt-6 md:mt-8">
       <ul className="arco">
         {categorias.map((c, i) => {
           const Icono = ICONOS_AREA[c.slug] ?? Globe;
@@ -294,7 +290,7 @@ function ArcoAreas({ reducido }: { reducido: boolean }) {
           );
         })}
       </ul>
-    </motion.nav>
+    </nav>
   );
 }
 
@@ -317,7 +313,7 @@ export default function Hero() {
         mx.set(-1);
         my.set(-1);
       }}
-      className="relative overflow-hidden min-h-[100svh] flex flex-col px-6 md:px-10 pt-24 md:pt-28 pb-10 md:pb-12"
+      className="relative overflow-hidden md:min-h-[100svh] flex flex-col px-6 md:px-10 pt-24 md:pt-28 pb-10 md:pb-12"
     >
       <div className="max-w-[104rem] mx-auto w-full flex-1 flex flex-col">
         <div className="aparecer flex items-center justify-between gap-6 whitespace-nowrap t-eyebrow text-[var(--forst-black)]/60">
@@ -329,7 +325,11 @@ export default function Hero() {
           <span className="hidden sm:inline">Lima, Perú</span>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center py-10 lg:py-8">
+        {/* En celular el Hero mide lo que su contenido (sin alto mínimo de
+            pantalla): con un nombre de solo ~66 px de alto, estirar el
+            hueco dejaba bandas vacías arriba y abajo del cartel. Desde md
+            el cartel vuelve a llenar la pantalla y se centra. */}
+        <div className="md:flex-1 flex flex-col justify-center py-8 md:py-10 lg:py-8">
           <Cartel mx={mx} my={my} />
         </div>
 

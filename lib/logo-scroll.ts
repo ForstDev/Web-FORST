@@ -9,3 +9,7 @@ import { motionValue } from "motion/react";
  * lo lee; vive acá porque los dos componentes no se tocan entre sí.
  */
 export const progresoLogo = motionValue(0);
+
+/** Scroll (px) en el que el nombre del Hero termina de acoplarse al header.
+ * Lo escribe el Hero; lo lee el asentado. 0 = sin viaje (movimiento reducido). */
+export const recorridoLogo = motionValue(0);
