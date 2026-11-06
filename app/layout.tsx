@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Lexend_Giga, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/animations/SmoothScrollProvider";
 import Header from "@/components/layout/Header";
@@ -10,29 +10,35 @@ import CookieConsent from "@/components/analytics/CookieConsent";
 import { portalHabilitado } from "@/lib/portal/config";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 
-/** Poppins: titulares y textos de display. Desde Google Fonts y no como
- * .ttf local: next/font la descarga al compilar, la sirve desde el propio
- * dominio en woff2 y solo con caracteres latinos (unos 8 KB por peso
- * contra 155 KB de cada .ttf). Solo los pesos que el sitio usa. */
-const poppins = Poppins({
+// Mismas familias y pesos, servidos localmente en WOFF2 (subconjunto
+// latino). La compilación ya no depende de Google Fonts ni su red.
+const poppins = localFont({
   variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  src: [
+    { path: "../public/assets/fonts/poppins-300.woff2", weight: "300", style: "normal" },
+    { path: "../public/assets/fonts/poppins-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/assets/fonts/poppins-500.woff2", weight: "500", style: "normal" },
+    { path: "../public/assets/fonts/poppins-600.woff2", weight: "600", style: "normal" },
+    { path: "../public/assets/fonts/poppins-700.woff2", weight: "700", style: "normal" },
+  ],
 });
 
-const montserrat = Montserrat({
+const montserrat = localFont({
   variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  display: "swap",
+  src: [
+    { path: "../public/assets/fonts/montserrat-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/assets/fonts/montserrat-500.woff2", weight: "500", style: "normal" },
+    { path: "../public/assets/fonts/montserrat-600.woff2", weight: "600", style: "normal" },
+  ],
 });
 
-/** Solo para el nombre "FORST": es la tipografía real del isotipo, no la
- * del sitio (Poppins/Montserrat). Se carga como fuente variable, sin
- * fijar pesos, porque el cartel del Hero mueve el grosor de cada letra
- * en continuo según dónde está el cursor. */
-const lexendGiga = Lexend_Giga({
+// El nombre FORST conserva Lexend Giga variable para la interacción del Hero.
+const lexendGiga = localFont({
   variable: "--font-lexend-giga",
-  subsets: ["latin"],
+  display: "swap",
+  src: [{ path: "../public/assets/fonts/lexend-giga-100-900.woff2", weight: "100 900", style: "normal" }],
 });
 
 const SITE_URL = "https://web-forst.vercel.app";

@@ -45,6 +45,12 @@ const secciones: SeccionLegal[] = [
             esas conversaciones.
           </li>
           <li>
+            <strong>Cuando agendas una cita.</strong> Recogemos tu nombre,
+            correo, fecha y hora elegidas y, si los indicas, tu negocio y
+            el motivo de la reunión. Estos datos se envían a Google Calendar
+            para crear el evento, generar Google Meet y enviarte la invitación.
+          </li>
+          <li>
             <strong>Cuando presentas un reclamo o una queja.</strong> El libro
             de reclamaciones pide tu nombre, documento de identidad,
             domicilio, teléfono, correo y el detalle del caso. Si eres menor
@@ -77,6 +83,7 @@ const secciones: SeccionLegal[] = [
       <>
         <ul>
           <li>Responder tus consultas y preparar una propuesta o cotización.</li>
+          <li>Consultar disponibilidad y coordinar las citas virtuales que solicites.</li>
           <li>
             Ejecutar el servicio que contrataste: coordinar el proyecto,
             darte soporte después de la entrega y emitir comprobantes.
@@ -154,7 +161,7 @@ const secciones: SeccionLegal[] = [
             </tr>
             <tr>
               <td>Google LLC</td>
-              <td>Google Analytics, solo si aceptaste las cookies.</td>
+              <td>Google Analytics, solo si aceptaste las cookies; Google Calendar y Meet, cuando reservas una cita.</td>
             </tr>
             <tr>
               <td>Meta Platforms, Inc.</td>
